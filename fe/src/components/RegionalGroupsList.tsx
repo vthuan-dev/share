@@ -4,6 +4,7 @@ import { api } from '../utils/api';
 import { toast } from 'sonner';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Checkbox } from './ui/checkbox';
+import checkImg from './public/check.png';
 
 interface Group {
   id: string;
@@ -200,15 +201,27 @@ export default function RegionalGroupsList({ selectedGroups = [], onGroupSelect,
             aria-pressed={selectionMode ? isSelected : undefined}
           >
             {selectionMode && (
-              <Checkbox
-                checked={isSelected}
-                onCheckedChange={(checked: any) => {
-                  const nextChecked = checked === true;
-                  onGroupSelect?.(groupId, nextChecked, { id: groupId, name: group.name, region: group.region, image: group.image });
-                }}
-                className="flex-shrink-0"
-                onClick={(e: any) => e.stopPropagation()}
-              />
+              <>
+                {isSelected ? (
+                  <div className="w-5 h-5 rounded-full overflow-hidden border-2 border-green-500 flex-shrink-0 ring-2 ring-green-500 ring-offset-2 ring-offset-white">
+                    <ImageWithFallback
+                      src={checkImg}
+                      alt={group.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <Checkbox
+                    checked={false}
+                    onCheckedChange={(checked: any) => {
+                      const nextChecked = checked === true;
+                      onGroupSelect?.(groupId, nextChecked, { id: groupId, name: group.name, region: group.region, image: group.image });
+                    }}
+                    className="flex-shrink-0"
+                    onClick={(e: any) => e.stopPropagation()}
+                  />
+                )}
+              </>
             )}
             {group.image ? (
               <div className="relative flex-shrink-0">

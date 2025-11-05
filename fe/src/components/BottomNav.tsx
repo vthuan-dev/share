@@ -7,6 +7,7 @@ interface BottomNavProps {
   setActiveTab: (tab: string) => void;
   selectedGroups?: string[];
   selectedGroupMeta?: Record<string, { id: string; name?: string; region?: string; image?: string }>;
+  currentUserName?: string;
 }
 
 // Facebook icon component
@@ -16,7 +17,7 @@ const FacebookIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export default function BottomNav({ activeTab, setActiveTab, selectedGroups = [], selectedGroupMeta = {} }: BottomNavProps) {
+export default function BottomNav({ activeTab, setActiveTab, selectedGroups = [], selectedGroupMeta = {}, currentUserName }: BottomNavProps) {
   const [isFbSheetOpen, setIsFbSheetOpen] = useState(false);
   const selectedGroupObjects = useMemo(() => selectedGroups.map((id) => (selectedGroupMeta[id] ? selectedGroupMeta[id] : { id, name: id })), [selectedGroups, selectedGroupMeta]);
   const navItems = [
@@ -64,6 +65,7 @@ export default function BottomNav({ activeTab, setActiveTab, selectedGroups = []
         open={isFbSheetOpen}
         onOpenChange={setIsFbSheetOpen}
         selectedGroups={selectedGroupObjects}
+        currentUserName={currentUserName}
       />
 
       <div className="flex items-center justify-around px-2 pb-safe">

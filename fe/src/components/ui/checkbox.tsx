@@ -12,7 +12,7 @@ function Checkbox({
     <CheckboxPrimitive.Root
       data-slot="checkbox"
       className={cn(
-        "peer h-5 w-5 shrink-0 rounded-md border-2 border-gray-300 bg-white shadow-sm transition-all",
+        "peer h-5 w-5 shrink-0 rounded-full border-2 border-gray-300 bg-white shadow-sm transition-all",
         "hover:border-green-400",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500",
         "disabled:cursor-not-allowed disabled:opacity-50",
@@ -28,8 +28,8 @@ function Checkbox({
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="14"
-          height="14"
+          width="12"
+          height="12"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"

@@ -4,6 +4,7 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 import { api } from '../utils/api';
 import { toast } from 'sonner';
 import { Checkbox } from './ui/checkbox';
+import checkImg from './public/check.png';
 
 interface Group {
   id: string;
@@ -181,15 +182,27 @@ export default function GroupsList({ selectedGroups = [], onGroupSelect, selecti
             aria-pressed={selectionMode ? isSelected : undefined}
           >
             {selectionMode && (
-              <Checkbox
-                checked={isSelected}
-                onCheckedChange={(checked: any) => {
-                  const nextChecked = checked === true; // normalize from boolean | 'indeterminate'
-                  onGroupSelect?.(groupId, nextChecked, { id: groupId, name: group.name, region: group.region, image: group.image });
-                }}
-                className="flex-shrink-0"
-                onClick={(e: any) => e.stopPropagation()}
-              />
+              <>
+                {isSelected ? (
+                  <div className="w-5 h-5 rounded-full overflow-hidden border-2 border-green-500 flex-shrink-0 ring-2 ring-green-500 ring-offset-2 ring-offset-white">
+                    <ImageWithFallback
+                      src={checkImg}
+                      alt={group.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <Checkbox
+                    checked={false}
+                    onCheckedChange={(checked: any) => {
+                      const nextChecked = checked === true;
+                      onGroupSelect?.(groupId, nextChecked, { id: groupId, name: group.name, region: group.region, image: group.image });
+                    }}
+                    className="flex-shrink-0"
+                    onClick={(e: any) => e.stopPropagation()}
+                  />
+                )}
+              </>
             )}
             
             <div className="relative flex-shrink-0">
@@ -207,14 +220,16 @@ export default function GroupsList({ selectedGroups = [], onGroupSelect, selecti
             
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="truncate">{group.name}</h3>
+                <h3 className="truncate font-medium text-gray-800">{group.name}</h3>
                 {group.verified && (
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                 )}
               </div>
-              <div className="flex items-center gap-1 text-sm">
+              <div className="flex items-center gap-1.5 text-sm">
                 <div className={`w-2 h-2 rounded-full ${isSelected ? 'bg-green-500' : 'bg-blue-500'}`}></div>
-                <span className={isSelected ? 'text-green-600' : 'text-blue-600'}>{group.status}</span>
+                <span className={`font-medium ${isSelected ? 'text-green-600' : 'text-blue-600'}`}>
+                  {isSelected ? 'Đã chọn' : group.status}
+                </span>
               </div>
             </div>
           </div>

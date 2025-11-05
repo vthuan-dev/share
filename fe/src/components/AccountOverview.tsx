@@ -1,4 +1,4 @@
-import { Share2, Users, ChevronRight, Wallet } from 'lucide-react';
+import { Share2, Users, ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from '../utils/api';
 
@@ -23,31 +23,11 @@ export default function AccountOverview() {
 
   return (
     <div className="mt-4">
-      <h2 className="mb-3">Tổng quan tài khoản</h2>
+      <h2 className="mb-4">Tổng quan tài khoản</h2>
       
-      <div className="grid grid-cols-2 gap-3">
-        {/* Số dư tài khoản */}
-        <div className="bg-gradient-to-br from-red-600 to-orange-500 rounded-2xl p-4 text-white col-span-2">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center">
-              <Wallet className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-sm font-medium">Số dư tài khoản</span>
-          </div>
-          <div className="mb-2">
-            {loading ? (
-              <div className="text-2xl">Đang tải...</div>
-            ) : (
-              <>
-                <div className="text-3xl font-bold">{balance.toLocaleString('vi-VN')} đ</div>
-                <div className="text-sm text-white/80">Có thể sử dụng ngay</div>
-              </>
-            )}
-          </div>
-        </div>
-
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {/* Tổng số nhóm đã share */}
-        <div className="bg-gray-100 rounded-2xl p-4">
+        <div className="bg-gray-100 rounded-2xl p-4 h-32 flex flex-col justify-between">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 bg-black rounded-xl flex items-center justify-center">
               <Share2 className="w-4 h-4 text-white" />
@@ -65,7 +45,7 @@ export default function AccountOverview() {
         </div>
 
         {/* Những người đã quan tâm */}
-        <div className="bg-gray-100 rounded-2xl p-4">
+        <div className="bg-gray-100 rounded-2xl p-4 h-32 flex flex-col justify-between">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 bg-black rounded-xl flex items-center justify-center">
               <Users className="w-4 h-4 text-white" />

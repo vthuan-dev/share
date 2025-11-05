@@ -1,12 +1,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { ChevronRight, ChevronDown } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 interface HeaderProps {
   userName?: string;
-  balance?: number;
 }
 
-export default function Header({ userName = 'Phạm Văn Phong', balance = 0 }: HeaderProps) {
+export default function Header({ userName = 'Phạm Văn Phong' }: HeaderProps) {
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Chào buổi sáng ☀️';
@@ -41,21 +40,6 @@ export default function Header({ userName = 'Phạm Văn Phong', balance = 0 }: 
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Balance Card */}
-      <div className="bg-white text-black rounded-[24px] p-4 flex items-center justify-between shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
-            <svg className="w-6 h-6 text-red-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-          <span className="text-lg">{balance?.toLocaleString('vi-VN')} đ</span>
-        </div>
-        <ChevronDown className="w-5 h-5 text-gray-400" />
       </div>
     </div>
   );

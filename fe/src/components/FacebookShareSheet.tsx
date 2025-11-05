@@ -8,9 +8,10 @@ interface FacebookShareSheetProps {
   onOpenChange: (open: boolean) => void;
   // Có thể nhận mảng id hoặc mảng đối tượng nhóm tối thiểu có id
   selectedGroups: Array<{ id: string; name?: string; region?: string; image?: string }> | string[];
+  currentUserName?: string;
 }
 
-export default function FacebookShareSheet({ open, onOpenChange, selectedGroups }: FacebookShareSheetProps) {
+export default function FacebookShareSheet({ open, onOpenChange, selectedGroups, currentUserName }: FacebookShareSheetProps) {
   const [step, setStep] = useState<'login' | 'share'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -286,7 +287,7 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups 
                     </svg>
                   </div>
                   <div>
-                    <p className="text-base font-medium text-gray-900">Facebook User</p>
+                    <p className="text-base font-medium text-gray-900">{currentUserName || 'Facebook User'}</p>
                     <div className="flex items-center gap-1 mt-0.5">
                       <div className="px-2 py-0.5 bg-gray-200 rounded text-xs text-gray-700 flex items-center gap-1">
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">

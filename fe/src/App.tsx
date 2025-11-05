@@ -197,7 +197,7 @@ function MainApp() {
     <div className="min-h-screen bg-gray-100 flex items-start justify-center">
       <div className="w-full max-w-[430px] min-h-screen bg-white relative shadow-2xl">
         {/* Header */}
-        <Header userName={userName} balance={userBalance} />
+        <Header userName={userName} />
 
         {/* Content */}
         <div className="bg-white rounded-t-[32px] -mt-24 px-4 pt-6 pb-24 min-h-screen">
@@ -205,9 +205,6 @@ function MainApp() {
             <>
               {/* Account Overview */}
               <AccountOverview />
-
-              {/* Info Tabs */}
-              <InfoTabs />
 
               {/* Regional Groups List with selection on overview */}
               <RegionalGroupsList
@@ -319,7 +316,7 @@ function MainApp() {
         </div>
 
         {/* Bottom Navigation */}
-        <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} selectedGroups={selectedGroups} selectedGroupMeta={selectedGroupMeta} />
+        <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} selectedGroups={selectedGroups} selectedGroupMeta={selectedGroupMeta} currentUserName={userName} />
       </div>
     </div>
   );
