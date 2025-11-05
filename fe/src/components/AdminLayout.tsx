@@ -1,6 +1,8 @@
 import { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Home, ShieldCheck, LogOut, Bell, Search } from 'lucide-react';
+// Use provided logo image
+import logoImg from './public/image.png';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -23,8 +25,8 @@ export default function AdminLayout({ children, userName = 'Admin' }: AdminLayou
           <div className="flex items-center justify-between h-16">
             {/* Logo & Brand */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
-                <ShieldCheck className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg bg-white">
+                <img src={logoImg} alt="Logo" className="w-full h-full object-cover" />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
