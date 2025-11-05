@@ -3,9 +3,10 @@ import { ChevronRight, ChevronDown } from 'lucide-react';
 
 interface HeaderProps {
   userName?: string;
+  balance?: number;
 }
 
-export default function Header({ userName = 'Phạm Văn Phong' }: HeaderProps) {
+export default function Header({ userName = 'Phạm Văn Phong', balance = 0 }: HeaderProps) {
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Chào buổi sáng ☀️';
@@ -52,7 +53,7 @@ export default function Header({ userName = 'Phạm Văn Phong' }: HeaderProps) 
               <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <span className="text-lg">11.930 đ</span>
+          <span className="text-lg">{balance?.toLocaleString('vi-VN')} đ</span>
         </div>
         <ChevronDown className="w-5 h-5 text-gray-400" />
       </div>

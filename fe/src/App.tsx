@@ -25,6 +25,7 @@ function MainApp() {
   const [authScreen, setAuthScreen] = useState<AuthScreen>('login');
   const [userName, setUserName] = useState('');
   const [userRole, setUserRole] = useState<'user' | 'admin'>('user');
+  const [userBalance, setUserBalance] = useState<number>(0);
   const [activeTab, setActiveTab] = useState('overview');
   const [accountScreen, setAccountScreen] = useState<AccountScreen>('main');
   const [isLoading, setIsLoading] = useState(true);
@@ -40,6 +41,7 @@ function MainApp() {
           setUserName(user.name);
           const role = user.role || 'user';
           setUserRole(role);
+          setUserBalance(Number(user.balance) || 0);
           setIsAuthenticated(true);
           if (role === 'admin') {
             window.location.href = '/admin';
@@ -62,6 +64,7 @@ function MainApp() {
       setUserName(user.name);
       const role = user.role || 'user';
       setUserRole(role);
+      setUserBalance(Number(user.balance) || 0);
       setIsAuthenticated(true);
       if (role === 'admin') {
         window.location.href = '/admin';
@@ -89,6 +92,7 @@ function MainApp() {
         setUserName(result.user.name);
         const role = result.user.role || 'user';
         setUserRole(role);
+        setUserBalance(Number(result.user.balance) || 0);
         setIsAuthenticated(true);
         if (role === 'admin') {
           window.location.href = '/admin';
@@ -183,7 +187,7 @@ function MainApp() {
     <div className="min-h-screen bg-gray-100 flex items-start justify-center">
       <div className="w-full max-w-[430px] min-h-screen bg-white relative shadow-2xl">
         {/* Header */}
-        <Header userName={userName} />
+        <Header userName={userName} balance={userBalance} />
 
         {/* Content */}
         <div className="bg-white rounded-t-[32px] -mt-24 px-4 pt-6 pb-24 min-h-screen">

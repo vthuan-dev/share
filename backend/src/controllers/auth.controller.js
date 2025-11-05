@@ -47,7 +47,10 @@ export async function login(req, res, next) {
       id: doc._id.toString(), 
       name: doc.name, 
       email: doc.email,
-      role: doc.role 
+      role: doc.role,
+      balance: doc.balance || 0,
+      isApproved: !!doc.isApproved,
+      createdAt: doc.createdAt,
     };
     const token = signToken(user);
     res.json({ user, token });
