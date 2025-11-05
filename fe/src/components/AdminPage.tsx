@@ -194,7 +194,7 @@ export default function AdminPage() {
             {users.map((user) => (
               <div
                 key={user._id}
-                className={`bg-white rounded-2xl p-4 shadow-sm border-2 ${
+                className={`bg-white rounded-2xl p-4 shadow-sm border-2 overflow-visible ${
                   user.isApproved ? 'border-green-200' : 'border-yellow-200'
                 }`}
               >
@@ -239,7 +239,7 @@ export default function AdminPage() {
                 {!user.isApproved && (
                   <>
                     {approvingUserId === user._id ? (
-                      <div className="space-y-2">
+                      <div className="space-y-2 mt-3">
                         <div className="flex gap-2 items-center">
                           <input
                             type="number"
@@ -270,17 +270,17 @@ export default function AdminPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 mt-3 relative">
                         <button
                           onClick={() => setApprovingUserId(user._id)}
-                          className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
+                          className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 z-10 pointer-events-auto"
                         >
                           <CheckCircle className="w-4 h-4" />
                           Phê duyệt
                         </button>
                         <button
                           onClick={() => handleReject(user._id)}
-                          className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
+                          className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 z-10 pointer-events-auto"
                         >
                           <XCircle className="w-4 h-4" />
                           Từ chối
