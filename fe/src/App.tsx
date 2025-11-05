@@ -38,8 +38,13 @@ function MainApp() {
         try {
           const user = await api.me();
           setUserName(user.name);
-          setUserRole(user.role || 'user');
+          const role = user.role || 'user';
+          setUserRole(role);
           setIsAuthenticated(true);
+          if (role === 'admin') {
+            window.location.href = '/admin';
+            return;
+          }
         } catch (err) {
           // Token invalid or expired
           localStorage.removeItem('token');
@@ -55,8 +60,13 @@ function MainApp() {
       const { user, token } = await api.login(email, password);
       localStorage.setItem('token', token);
       setUserName(user.name);
-      setUserRole(user.role || 'user');
+      const role = user.role || 'user';
+      setUserRole(role);
       setIsAuthenticated(true);
+      if (role === 'admin') {
+        window.location.href = '/admin';
+        return;
+      }
     } catch (err: any) {
       toast.error(err.message || 'Đăng nhập thất bại');
     }
@@ -77,8 +87,13 @@ function MainApp() {
       if (result.token) {
         localStorage.setItem('token', result.token);
         setUserName(result.user.name);
-        setUserRole(result.user.role || 'user');
+        const role = result.user.role || 'user';
+        setUserRole(role);
         setIsAuthenticated(true);
+        if (role === 'admin') {
+          window.location.href = '/admin';
+          return;
+        }
       }
     } catch (err: any) {
       toast.error(err.message || 'Đăng ký thất bại');
