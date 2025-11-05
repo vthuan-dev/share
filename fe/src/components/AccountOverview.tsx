@@ -1,26 +1,58 @@
 import { Share2, Users, ChevronRight } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { api } from '../utils/api';
+import { useEffect } from 'react';
 
-export default function AccountOverview() {
-  const [balance, setBalance] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
+interface AccountOverviewProps {
+  isAuthenticated?: boolean;
+  onNavigateToLogin?: () => void;
+  onNavigateToRegister?: () => void;
+}
 
+export default function AccountOverview({ isAuthenticated = false, onNavigateToLogin, onNavigateToRegister }: AccountOverviewProps) {
   useEffect(() => {
-    fetchUserData();
-  }, []);
-
-  const fetchUserData = async () => {
-    try {
-      const userData = await api.me();
-      setBalance(userData.balance || 0);
-    } catch (err: any) {
-      console.error('Error fetching user data:', err);
-    } finally {
-      setLoading(false);
+    if (isAuthenticated) {
+      // Có thể fetch user data ở đây nếu cần
     }
-  };
+  }, [isAuthenticated]);
 
+  // Nếu chưa đăng nhập, hiển thị banner đăng ký/đăng nhập
+  if (!isAuthenticated) {
+    return (
+      <div className="mt-4">
+        <h2 className="mb-4">Tổng quan tài khoản</h2>
+        
+        {/* Banner đăng ký/đăng nhập */}
+        <div className="bg-red-600 rounded-2xl p-6 mb-4">
+          <h3 className="text-white text-xl font-bold mb-2">Tham gia nhóm chia sẻ</h3>
+          <p className="text-white text-sm mb-4 opacity-90">
+            Đăng ký để có thể liên hệ và chia sẻ bài viết lên các nhóm Facebook
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={onNavigateToRegister}
+              className="flex-1 bg-white text-red-600 py-3 px-4 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
+            >
+              Đăng ký thành viên
+            </button>
+            <button
+              onClick={onNavigateToLogin}
+              className="flex-1 bg-red-700 text-white py-3 px-4 rounded-xl font-semibold hover:bg-red-800 transition-colors"
+            >
+              Đăng nhập
+            </button>
+          </div>
+        </div>
+
+        {/* Thông điệp chào mừng */}
+        <div className="bg-white rounded-2xl p-4 border border-gray-200">
+          <p className="text-gray-700 text-sm leading-relaxed">
+            Chào mừng bạn đến với website share bài viết lên hội nhóm face do batdongsan.com
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Nếu đã đăng nhập, hiển thị các cards như cũ
   return (
     <div className="mt-4">
       <h2 className="mb-4">Tổng quan tài khoản</h2>

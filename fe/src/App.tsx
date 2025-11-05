@@ -4,6 +4,7 @@ import { PlusCircle, UserCircle } from 'lucide-react';
 import Login from './components/Login';
 import Register from './components/Register';
 import Header from './components/Header';
+import logoImg from './components/public/image.png';
 import AccountOverview from './components/AccountOverview';
 import GroupsList from './components/GroupsList';
 import RegionalGroupsList from './components/RegionalGroupsList';
@@ -139,12 +140,8 @@ function MainApp() {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-20 h-20 bg-red-600 rounded-[24px] mx-auto mb-4 flex items-center justify-center animate-pulse">
-            <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+          <div className="w-20 h-20 rounded-[24px] mx-auto mb-4 overflow-hidden shadow-lg bg-white animate-pulse">
+            <img src={logoImg} alt="Logo" className="w-full h-full object-cover" />
           </div>
           <p className="text-gray-600">Đang tải...</p>
         </div>
@@ -199,7 +196,11 @@ function MainApp() {
           {activeTab === 'overview' && (
             <>
               {/* Account Overview */}
-              <AccountOverview />
+              <AccountOverview 
+                isAuthenticated={isAuthenticated}
+                onNavigateToLogin={() => setAuthScreen('login')}
+                onNavigateToRegister={() => setAuthScreen('register')}
+              />
 
               {/* Regional Groups List with selection on overview */}
               <RegionalGroupsList

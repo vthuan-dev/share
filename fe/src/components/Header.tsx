@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { ChevronRight } from 'lucide-react';
+import logoImg from './public/image.png';
 
 interface HeaderProps {
   userName?: string;
@@ -23,6 +24,13 @@ export default function Header({ userName = 'Phạm Văn Phong' }: HeaderProps) 
 
   return (
     <div className="bg-red-600 text-white px-4 pt-4 pb-32">
+      {/* Logo */}
+      <div className="mb-4">
+        <div className="w-16 h-16 rounded-[16px] overflow-hidden shadow-lg bg-white">
+          <img src={logoImg} alt="Logo" className="w-full h-full object-cover" />
+        </div>
+      </div>
+      
       {/* Top section with avatar and name */}
       <div className="flex items-center mb-4">
         <div className="flex items-center gap-3">
