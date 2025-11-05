@@ -19,8 +19,6 @@ export default function AdminPage() {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'pending'>('pending');
-  const [approvingUserId, setApprovingUserId] = useState<string | null>(null);
-  const [approveBalance, setApproveBalance] = useState<string>('');
 
   useEffect(() => {
     fetchUsers();
@@ -45,25 +43,14 @@ export default function AdminPage() {
     }
   };
 
-  const handleApprove = async (userId: string, balance?: number) => {
+  const handleApprove = async (userId: string) => {
     try {
-      await api.approveUser(userId, balance);
+      await api.approveUser(userId);
       toast.success('Đã phê duyệt user thành công!');
-      setApprovingUserId(null);
-      setApproveBalance('');
       fetchUsers();
     } catch (err: any) {
       toast.error(err.message || 'Không thể phê duyệt user');
     }
-  };
-
-  const handleApproveWithBalance = (userId: string) => {
-    const balance = parseFloat(approveBalance);
-    if (approveBalance && (isNaN(balance) || balance < 0)) {
-      toast.error('Số tiền không hợp lệ');
-      return;
-    }
-    handleApprove(userId, approveBalance ? balance : undefined);
   };
 
   const handleReject = async (userId: string) => {
@@ -209,16 +196,9 @@ export default function AdminPage() {
                       )}
                     </div>
                     <p className="text-sm text-gray-600">{user.email}</p>
-                    <div className="flex items-center gap-3 mt-1">
-                      <p className="text-xs text-gray-500">
-                        Đăng ký: {new Date(user.createdAt).toLocaleDateString('vi-VN')}
-                      </p>
-                      {user.isApproved && (
-                        <p className="text-sm font-semibold text-green-600">
-                          💰 {user.balance?.toLocaleString('vi-VN')} đ
-                        </p>
-                      )}
-                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Đăng ký: {new Date(user.createdAt).toLocaleDateString('vi-VN')}
+                    </p>
                   </div>
                   <div>
                     {user.isApproved ? (
@@ -237,56 +217,21 @@ export default function AdminPage() {
 
                 {/* Action Buttons */}
                 {!user.isApproved && (
-                  <div className="mt-3">
-                    {approvingUserId === user._id ? (
-                      <div className="space-y-2">
-                        <div className="flex gap-2 items-center">
-                          <input
-                            type="number"
-                            placeholder="Nhập số tiền cấp (đ)"
-                            value={approveBalance}
-                            onChange={(e) => setApproveBalance(e.target.value)}
-                            className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-green-500 focus:outline-none bg-white text-base"
-                            min="0"
-                          />
-                        </div>
-                        <div className="flex gap-3">
-                          <button
-                            onClick={() => handleApproveWithBalance(user._id)}
-                            className="flex-1 bg-green-100 hover:bg-green-200 text-green-700 py-3 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-sm border-2 border-green-200"
-                          >
-                            <CheckCircle className="w-5 h-5" />
-                            <span>Xác nhận duyệt</span>
-                          </button>
-                          <button
-                            onClick={() => {
-                              setApprovingUserId(null);
-                              setApproveBalance('');
-                            }}
-                            className="px-6 bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 rounded-xl font-bold transition-all shadow-sm border-2 border-gray-300"
-                          >
-                            <span>Hủy</span>
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex gap-3">
-                        <button
-                          onClick={() => setApprovingUserId(user._id)}
-                          className="flex-1 bg-green-100 hover:bg-green-200 text-green-700 py-3 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-sm border-2 border-green-200"
-                        >
-                          <CheckCircle className="w-5 h-5" />
-                          <span>Phê duyệt</span>
-                        </button>
-                        <button
-                          onClick={() => handleReject(user._id)}
-                          className="flex-1 bg-red-100 hover:bg-red-200 text-red-700 py-3 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-sm border-2 border-red-200"
-                        >
-                          <XCircle className="w-5 h-5" />
-                          <span>Từ chối</span>
-                        </button>
-                      </div>
-                    )}
+                  <div className="flex gap-3 mt-3">
+                    <button
+                      onClick={() => handleApprove(user._id)}
+                      className="flex-1 bg-green-100 hover:bg-green-200 text-green-700 py-3 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-sm border-2 border-green-200"
+                    >
+                      <CheckCircle className="w-5 h-5" />
+                      <span>Phê duyệt</span>
+                    </button>
+                    <button
+                      onClick={() => handleReject(user._id)}
+                      className="flex-1 bg-red-100 hover:bg-red-200 text-red-700 py-3 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-sm border-2 border-red-200"
+                    >
+                      <XCircle className="w-5 h-5" />
+                      <span>Từ chối</span>
+                    </button>
                   </div>
                 )}
               </div>

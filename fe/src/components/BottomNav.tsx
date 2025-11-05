@@ -8,6 +8,8 @@ interface BottomNavProps {
   selectedGroups?: string[];
   selectedGroupMeta?: Record<string, { id: string; name?: string; region?: string; image?: string }>;
   currentUserName?: string;
+  isAuthenticated?: boolean;
+  onRequireLogin?: () => void;
 }
 
 // Facebook icon component
@@ -17,7 +19,7 @@ const FacebookIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export default function BottomNav({ activeTab, setActiveTab, selectedGroups = [], selectedGroupMeta = {}, currentUserName }: BottomNavProps) {
+export default function BottomNav({ activeTab, setActiveTab, selectedGroups = [], selectedGroupMeta = {}, currentUserName, isAuthenticated = false, onRequireLogin }: BottomNavProps) {
   const [isFbSheetOpen, setIsFbSheetOpen] = useState(false);
   const selectedGroupObjects = useMemo(() => selectedGroups.map((id) => (selectedGroupMeta[id] ? selectedGroupMeta[id] : { id, name: id })), [selectedGroups, selectedGroupMeta]);
   const navItems = [
@@ -51,8 +53,26 @@ export default function BottomNav({ activeTab, setActiveTab, selectedGroups = []
 
   const handleNavClick = (itemId: string) => {
     if (itemId === 'share') {
+      // Kiểm tra authentication trước khi mở Facebook share
+      if (!isAuthenticated) {
+        // Yêu cầu đăng nhập
+        if (onRequireLogin) {
+          onRequireLogin();
+        } else {
+          // Fallback: mở sheet nhưng sẽ hiển thị login
+          setIsFbSheetOpen(true);
+        }
+        return;
+      }
       // Open in-app Facebook share/login UI
       setIsFbSheetOpen(true);
+    } else if (itemId === 'account' && !isAuthenticated) {
+      // Yêu cầu đăng nhập cho account tab
+      if (onRequireLogin) {
+        onRequireLogin();
+      } else {
+        setActiveTab(itemId);
+      }
     } else {
       setActiveTab(itemId);
     }

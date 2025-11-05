@@ -5,7 +5,6 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Header from './components/Header';
 import AccountOverview from './components/AccountOverview';
-import InfoTabs from './components/InfoTabs';
 import GroupsList from './components/GroupsList';
 import RegionalGroupsList from './components/RegionalGroupsList';
 import AccountPage from './components/AccountPage';
@@ -22,10 +21,9 @@ type AccountScreen = 'main' | 'profile' | 'settings' | 'security' | 'admin';
 
 function MainApp() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authScreen, setAuthScreen] = useState<AuthScreen>('login');
+  const [authScreen, setAuthScreen] = useState<AuthScreen | null>(null);
   const [userName, setUserName] = useState('');
   const [userRole, setUserRole] = useState<'user' | 'admin'>('user');
-  const [userBalance, setUserBalance] = useState<number>(0);
   const [activeTab, setActiveTab] = useState('overview');
   const [accountScreen, setAccountScreen] = useState<AccountScreen>('main');
   const [isLoading, setIsLoading] = useState(true);
@@ -42,7 +40,6 @@ function MainApp() {
           setUserName(user.name);
           const role = user.role || 'user';
           setUserRole(role);
-          setUserBalance(Number(user.balance) || 0);
           setIsAuthenticated(true);
           if (role === 'admin') {
             window.location.href = '/admin';
@@ -65,8 +62,8 @@ function MainApp() {
       setUserName(user.name);
       const role = user.role || 'user';
       setUserRole(role);
-      setUserBalance(Number(user.balance) || 0);
       setIsAuthenticated(true);
+      setAuthScreen(null); // Quay về trang chủ sau khi login
       if (role === 'admin') {
         window.location.href = '/admin';
         return;
@@ -93,8 +90,8 @@ function MainApp() {
         setUserName(result.user.name);
         const role = result.user.role || 'user';
         setUserRole(role);
-        setUserBalance(Number(result.user.balance) || 0);
         setIsAuthenticated(true);
+        setAuthScreen(null); // Quay về trang chủ sau khi register
         if (role === 'admin') {
           window.location.href = '/admin';
           return;
@@ -155,24 +152,22 @@ function MainApp() {
     );
   }
 
-  // Auth screens
-  if (!isAuthenticated) {
-    if (authScreen === 'login') {
-      return (
-        <Login
-          onLogin={handleLogin}
-          onNavigateToRegister={() => setAuthScreen('register')}
-        />
-      );
-    }
-    if (authScreen === 'register') {
-      return (
-        <Register
-          onRegister={handleRegister}
-          onNavigateToLogin={() => setAuthScreen('login')}
-        />
-      );
-    }
+  // Auth screens - chỉ hiển thị khi user chủ động vào login/register
+  if (authScreen === 'login') {
+    return (
+      <Login
+        onLogin={handleLogin}
+        onNavigateToRegister={() => setAuthScreen('register')}
+      />
+    );
+  }
+  if (authScreen === 'register') {
+    return (
+      <Register
+        onRegister={handleRegister}
+        onNavigateToLogin={() => setAuthScreen('login')}
+      />
+    );
   }
 
   // Account sub-screens
@@ -303,20 +298,41 @@ function MainApp() {
 
           {activeTab === 'account' && (
             <div className="pt-4">
-              <AccountPage
-                onNavigateToProfile={() => setAccountScreen('profile')}
-                onNavigateToSettings={() => setAccountScreen('settings')}
-                onNavigateToSecurity={() => setAccountScreen('security')}
-                onNavigateToAdmin={userRole === 'admin' ? () => setAccountScreen('admin') : undefined}
-                onLogout={handleLogout}
-                userRole={userRole}
-              />
+              {!isAuthenticated ? (
+                <div className="bg-gray-50 rounded-2xl p-6 text-center">
+                  <UserCircle className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                  <p className="text-gray-600 mb-4">Vui lòng đăng nhập để xem thông tin tài khoản</p>
+                  <button
+                    onClick={() => setAuthScreen('login')}
+                    className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors"
+                  >
+                    Đăng nhập
+                  </button>
+                </div>
+              ) : (
+                <AccountPage
+                  onNavigateToProfile={() => setAccountScreen('profile')}
+                  onNavigateToSettings={() => setAccountScreen('settings')}
+                  onNavigateToSecurity={() => setAccountScreen('security')}
+                  onNavigateToAdmin={userRole === 'admin' ? () => setAccountScreen('admin') : undefined}
+                  onLogout={handleLogout}
+                  userRole={userRole}
+                />
+              )}
             </div>
           )}
         </div>
 
         {/* Bottom Navigation */}
-        <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} selectedGroups={selectedGroups} selectedGroupMeta={selectedGroupMeta} currentUserName={userName} />
+        <BottomNav 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+          selectedGroups={selectedGroups} 
+          selectedGroupMeta={selectedGroupMeta} 
+          currentUserName={userName}
+          isAuthenticated={isAuthenticated}
+          onRequireLogin={() => setAuthScreen('login')}
+        />
       </div>
     </div>
   );
