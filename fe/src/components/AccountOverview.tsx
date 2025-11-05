@@ -41,13 +41,6 @@ export default function AccountOverview({ isAuthenticated = false, onNavigateToL
             </button>
           </div>
         </div>
-
-        {/* Thông điệp chào mừng */}
-        <div className="bg-white rounded-2xl p-4 border border-gray-200">
-          <p className="text-gray-700 text-sm leading-relaxed">
-            Chào mừng bạn đến với website share bài viết lên hội nhóm face do batdongsan.com
-          </p>
-        </div>
       </div>
     );
   }
