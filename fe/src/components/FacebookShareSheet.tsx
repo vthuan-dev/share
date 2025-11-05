@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { X, Eye, EyeOff, Check, Loader2 } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { api } from '../utils/api';
+import { toast } from 'sonner';
 
 interface FacebookShareSheetProps {
   open: boolean;
@@ -9,9 +10,10 @@ interface FacebookShareSheetProps {
   // Có thể nhận mảng id hoặc mảng đối tượng nhóm tối thiểu có id
   selectedGroups: Array<{ id: string; name?: string; region?: string; image?: string }> | string[];
   currentUserName?: string;
+  onShareSuccess?: () => void; // Callback khi share thành công để quay về trang chủ
 }
 
-export default function FacebookShareSheet({ open, onOpenChange, selectedGroups, currentUserName }: FacebookShareSheetProps) {
+export default function FacebookShareSheet({ open, onOpenChange, selectedGroups, currentUserName, onShareSuccess }: FacebookShareSheetProps) {
   const [step, setStep] = useState<'login' | 'share'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -91,15 +93,52 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups,
     }
   };
 
-  const handleShare = () => {
-    alert(`Đã chia sẻ thành công lên ${selectedGroups.length} nhóm!`);
+  const handleShare = async () => {
+    if (!postContent.trim()) {
+      toast.error('Vui lòng nhập nội dung bài viết');
+      return;
+    }
+
+    if (shareGroups.length === 0) {
+      toast.error('Vui lòng chọn ít nhất một nhóm để chia sẻ');
+      return;
+    }
+
+    // Hiển thị toast đang share
+    const toastId = toast.loading('Đang chia sẻ bài viết...', {
+      description: `Đang gửi bài viết lên ${shareGroups.length} nhóm`,
+    });
+
+    // Giả lập quá trình share (2-3 giây)
+    await new Promise(resolve => setTimeout(resolve, 2500));
+
+    // Đóng toast loading
+    toast.dismiss(toastId);
+
+    // Hiển thị toast thành công
+    toast.success(`Đã chia sẻ thành công lên ${shareGroups.length} nhóm!`, {
+      description: 'Bài viết của bạn đã được đăng lên các nhóm Facebook',
+      duration: 3000,
+    });
+
+    // Đóng modal và reset state
     onOpenChange(false);
+    
+    // Reset form sau khi đóng
     setTimeout(() => {
       setStep('login');
       setEmail('');
       setPassword('');
       setPostContent('');
+      setIsLoading(false);
     }, 300);
+
+    // Quay về trang chủ sau 1 giây
+    setTimeout(() => {
+      if (onShareSuccess) {
+        onShareSuccess();
+      }
+    }, 1000);
   };
 
   const handleClose = () => {

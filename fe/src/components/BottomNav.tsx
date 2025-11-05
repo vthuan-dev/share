@@ -86,6 +86,9 @@ export default function BottomNav({ activeTab, setActiveTab, selectedGroups = []
         onOpenChange={setIsFbSheetOpen}
         selectedGroups={selectedGroupObjects}
         currentUserName={currentUserName}
+        onShareSuccess={() => {
+          setActiveTab('overview');
+        }}
       />
 
       <div className="flex items-center justify-around px-2 pb-safe">
