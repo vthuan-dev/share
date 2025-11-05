@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Home, Users, UserCircle, Menu } from 'lucide-react';
 import FacebookShareSheet from './FacebookShareSheet';
 
 interface BottomNavProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  selectedGroups?: string[];
+  selectedGroupMeta?: Record<string, { id: string; name?: string; region?: string; image?: string }>;
 }
 
 // Facebook icon component
@@ -14,8 +16,9 @@ const FacebookIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export default function BottomNav({ activeTab, setActiveTab }: BottomNavProps) {
+export default function BottomNav({ activeTab, setActiveTab, selectedGroups = [], selectedGroupMeta = {} }: BottomNavProps) {
   const [isFbSheetOpen, setIsFbSheetOpen] = useState(false);
+  const selectedGroupObjects = useMemo(() => selectedGroups.map((id) => (selectedGroupMeta[id] ? selectedGroupMeta[id] : { id, name: id })), [selectedGroups, selectedGroupMeta]);
   const navItems = [
     {
       id: 'overview',
@@ -60,7 +63,7 @@ export default function BottomNav({ activeTab, setActiveTab }: BottomNavProps) {
       <FacebookShareSheet
         open={isFbSheetOpen}
         onOpenChange={setIsFbSheetOpen}
-        selectedGroups={[]}
+        selectedGroups={selectedGroupObjects}
       />
 
       <div className="flex items-center justify-around px-2 pb-safe">

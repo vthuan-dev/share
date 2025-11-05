@@ -17,7 +17,7 @@ interface Group {
 
 interface GroupsListProps {
   selectedGroups?: string[];
-  onGroupSelect?: (groupId: string, checked: boolean) => void;
+  onGroupSelect?: (groupId: string, checked: boolean, meta?: { id: string; name?: string; region?: string; image?: string }) => void;
   selectionMode?: boolean;
 }
 
@@ -173,15 +173,22 @@ export default function GroupsList({ selectedGroups = [], onGroupSelect, selecti
             className={`bg-white rounded-2xl p-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all ${
               isSelected ? 'ring-2 ring-red-500 bg-red-50' : ''
             }`}
+            onClick={() => {
+              if (!selectionMode) return;
+              onGroupSelect?.(groupId, !isSelected, { id: groupId, name: group.name, region: group.region, image: group.image });
+            }}
+            role={selectionMode ? 'button' : undefined}
+            aria-pressed={selectionMode ? isSelected : undefined}
           >
             {selectionMode && (
               <Checkbox
                 checked={isSelected}
                 onCheckedChange={(checked: any) => {
                   const nextChecked = checked === true; // normalize from boolean | 'indeterminate'
-                  onGroupSelect?.(groupId, nextChecked);
+                  onGroupSelect?.(groupId, nextChecked, { id: groupId, name: group.name, region: group.region, image: group.image });
                 }}
                 className="flex-shrink-0"
+                onClick={(e: any) => e.stopPropagation()}
               />
             )}
             

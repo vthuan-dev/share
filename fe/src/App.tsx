@@ -30,8 +30,9 @@ function MainApp() {
   const [accountScreen, setAccountScreen] = useState<AccountScreen>('main');
   const [isLoading, setIsLoading] = useState(true);
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
+  const [selectedGroupMeta, setSelectedGroupMeta] = useState<Record<string, { id: string; name?: string; region?: string; image?: string }>>({});
 
-  // Check if user is already logged in
+  // C6heck if user is already logged in
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
@@ -117,13 +118,22 @@ function MainApp() {
     setAccountScreen('main');
   };
 
-  const handleGroupSelect = (groupId: string, checked: boolean) => {
+  const handleGroupSelect = (groupId: string, checked: boolean, meta?: { id: string; name?: string; region?: string; image?: string }) => {
     setSelectedGroups(prev => {
       if (checked) {
         return [...prev, groupId];
       } else {
         return prev.filter(id => id !== groupId);
       }
+    });
+    setSelectedGroupMeta(prev => {
+      const next = { ...prev };
+      if (checked) {
+        next[groupId] = meta || { id: groupId };
+      } else {
+        delete next[groupId];
+      }
+      return next;
     });
   };
 
@@ -199,8 +209,12 @@ function MainApp() {
               {/* Info Tabs */}
               <InfoTabs />
 
-              {/* Regional Groups List */}
-              <RegionalGroupsList />
+              {/* Regional Groups List with selection on overview */}
+              <RegionalGroupsList
+                selectedGroups={selectedGroups}
+                selectionMode={true}
+                onGroupSelect={handleGroupSelect}
+              />
             </>
           )}
 
@@ -305,7 +319,7 @@ function MainApp() {
         </div>
 
         {/* Bottom Navigation */}
-        <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
+        <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} selectedGroups={selectedGroups} selectedGroupMeta={selectedGroupMeta} />
       </div>
     </div>
   );

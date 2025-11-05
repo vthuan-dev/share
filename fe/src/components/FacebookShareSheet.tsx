@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { X, Eye, EyeOff, Check, Loader2 } from 'lucide-react';
+import { ImageWithFallback } from './figma/ImageWithFallback';
+import { api } from '../utils/api';
 
 interface FacebookShareSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  selectedGroups: Array<{ id: string; name: string; region: string }>;
+  // Có thể nhận mảng id hoặc mảng đối tượng nhóm tối thiểu có id
+  selectedGroups: Array<{ id: string; name?: string; region?: string; image?: string }> | string[];
 }
 
 export default function FacebookShareSheet({ open, onOpenChange, selectedGroups }: FacebookShareSheetProps) {
@@ -14,6 +17,67 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups 
   const [showPassword, setShowPassword] = useState(false);
   const [postContent, setPostContent] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [shareGroups, setShareGroups] = useState<Array<{ id: string; name: string; region?: string; image?: string }>>([]);
+
+  // Chuẩn hoá danh sách id
+  const selectedIds = useMemo(
+    () => (Array.isArray(selectedGroups)
+      ? (typeof (selectedGroups as any[])[0] === 'string'
+          ? (selectedGroups as string[])
+          : (selectedGroups as any[]).map(g => g.id))
+      : []),
+    [selectedGroups]
+  );
+
+  // Tải thông tin nhóm để hiển thị tên + ảnh khi mở sheet
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        // Nếu đã truyền sẵn name/image thì dùng luôn
+        const prefilled = Array.isArray(selectedGroups) && typeof (selectedGroups as any[])[0] !== 'string'
+          ? (selectedGroups as any[]).filter((g) => g && g.id)
+          : [];
+
+        if (prefilled.length > 0) {
+          const normalized = prefilled.map((g: any) => ({
+            id: String(g.id),
+            name: g.name || String(g.id),
+            region: g.region,
+            image: g.image,
+          }));
+          if (!cancelled) setShareGroups(normalized);
+          return;
+        }
+
+        // Nếu chỉ có id: gọi API lấy danh sách, map theo id và thêm ảnh minh hoạ ổn định
+        const data = await api.groups();
+        const groupImages = [
+          'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=120&h=120&fit=crop',
+          'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=120&h=120&fit=crop',
+          'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=120&h=120&fit=crop',
+          'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=120&h=120&fit=crop',
+          'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=120&h=120&fit=crop',
+          'https://images.unsplash.com/photo-1460472178825-e5240623afd5?w=120&h=120&fit=crop',
+          'https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?w=120&h=120&fit=crop',
+          'https://images.unsplash.com/photo-1449844908441-8829872d2607?w=120&h=120&fit=crop',
+          'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=120&h=120&fit=crop',
+          'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=120&h=120&fit=crop',
+        ];
+        const mapById: Record<string, any> = {};
+        data.forEach((g: any, idx: number) => {
+          mapById[String(g.id)] = { id: String(g.id), name: g.name, region: g.region, image: groupImages[idx % groupImages.length] };
+        });
+        const finalGroups = selectedIds.map((id) => mapById[String(id)] || { id: String(id), name: String(id) });
+        if (!cancelled) setShareGroups(finalGroups);
+      } catch {
+        const fallback = selectedIds.map((id) => ({ id: String(id), name: String(id) }));
+        if (!cancelled) setShareGroups(fallback);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [open, selectedGroups, selectedIds]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -251,7 +315,7 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups 
                 </div>
 
                 <div className="space-y-2">
-                  {selectedGroups.length === 0 ? (
+                  {selectedIds.length === 0 ? (
                     <div className="text-center py-8 text-gray-500">
                       <svg className="w-16 h-16 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -260,16 +324,20 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups 
                       <p className="text-xs mt-1">Vui lòng chọn nhóm trước khi chia sẻ</p>
                     </div>
                   ) : (
-                    selectedGroups.map((group) => (
+                    shareGroups.map((group) => (
                       <div key={group.id} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200">
-                        <div className="w-12 h-12 rounded-lg bg-[#1877f2] flex items-center justify-center flex-shrink-0">
-                          <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
-                          </svg>
+                        <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-[#1877f2]">
+                          {group.image ? (
+                            <ImageWithFallback src={group.image} alt={group.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <svg className="w-6 h-6 text-white m-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                            </svg>
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-base font-medium text-gray-900 truncate">{group.name}</p>
-                          <p className="text-xs text-gray-500">{group.region}</p>
+                          {group.region && <p className="text-xs text-gray-500">{group.region}</p>}
                         </div>
                         <Check className="w-5 h-5 text-[#1877f2] flex-shrink-0" />
                       </div>

@@ -3,6 +3,7 @@ import { Users, ChevronRight, CheckCircle, Home } from 'lucide-react';
 import { api } from '../utils/api';
 import { toast } from 'sonner';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import { Checkbox } from './ui/checkbox';
 
 interface Group {
   id: string;
@@ -14,7 +15,13 @@ interface Group {
   local?: boolean;
 }
 
-export default function RegionalGroupsList() {
+interface RegionalGroupsListProps {
+  selectedGroups?: string[];
+  onGroupSelect?: (groupId: string, checked: boolean, meta?: { id: string; name?: string; region?: string; image?: string }) => void;
+  selectionMode?: boolean;
+}
+
+export default function RegionalGroupsList({ selectedGroups = [], onGroupSelect, selectionMode = false }: RegionalGroupsListProps) {
   const [activeRegion, setActiveRegion] = useState<'north' | 'central' | 'south'>('north');
   const [backendGroups, setBackendGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
@@ -178,11 +185,31 @@ export default function RegionalGroupsList() {
 
       {/* Groups List */}
       <div className="space-y-2">
-        {allGroups[activeRegion].map((group) => (
+        {allGroups[activeRegion].map((group) => {
+          const groupId = String(group.id);
+          const isSelected = selectedGroups.includes(groupId);
+          return (
           <div
             key={group.id}
-            className="bg-white rounded-xl p-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+            className={`bg-white rounded-xl p-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer ${isSelected ? 'ring-2 ring-red-500 bg-red-50' : ''}`}
+            onClick={() => {
+              if (!selectionMode) return;
+              onGroupSelect?.(groupId, !isSelected, { id: groupId, name: group.name, region: group.region, image: group.image });
+            }}
+            role={selectionMode ? 'button' : undefined}
+            aria-pressed={selectionMode ? isSelected : undefined}
           >
+            {selectionMode && (
+              <Checkbox
+                checked={isSelected}
+                onCheckedChange={(checked: any) => {
+                  const nextChecked = checked === true;
+                  onGroupSelect?.(groupId, nextChecked, { id: groupId, name: group.name, region: group.region, image: group.image });
+                }}
+                className="flex-shrink-0"
+                onClick={(e: any) => e.stopPropagation()}
+              />
+            )}
             {group.image ? (
               <div className="relative flex-shrink-0">
                 <ImageWithFallback
@@ -212,7 +239,7 @@ export default function RegionalGroupsList() {
             </div>
             <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
           </div>
-        ))}
+        );})}
       </div>
     </div>
   );
