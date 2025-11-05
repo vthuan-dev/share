@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Home, Users, UserCircle, Menu } from 'lucide-react';
+import FacebookShareSheet from './FacebookShareSheet';
 
 interface BottomNavProps {
   activeTab: string;
@@ -13,6 +15,7 @@ const FacebookIcon = ({ className }: { className?: string }) => (
 );
 
 export default function BottomNav({ activeTab, setActiveTab }: BottomNavProps) {
+  const [isFbSheetOpen, setIsFbSheetOpen] = useState(false);
   const navItems = [
     {
       id: 'overview',
@@ -44,8 +47,8 @@ export default function BottomNav({ activeTab, setActiveTab }: BottomNavProps) {
 
   const handleNavClick = (itemId: string) => {
     if (itemId === 'share') {
-      // Open Facebook login
-      window.open('https://www.facebook.com/login/', '_blank');
+      // Open in-app Facebook share/login UI
+      setIsFbSheetOpen(true);
     } else {
       setActiveTab(itemId);
     }
@@ -53,6 +56,13 @@ export default function BottomNav({ activeTab, setActiveTab }: BottomNavProps) {
 
   return (
     <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-200">
+      {/* Facebook Share/Login Sheet */}
+      <FacebookShareSheet
+        open={isFbSheetOpen}
+        onOpenChange={setIsFbSheetOpen}
+        selectedGroups={[]}
+      />
+
       <div className="flex items-center justify-around px-2 pb-safe">
         {navItems.map((item) => {
           const Icon = item.icon;

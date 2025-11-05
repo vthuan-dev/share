@@ -194,7 +194,7 @@ export default function AdminPage() {
             {users.map((user) => (
               <div
                 key={user._id}
-                className={`bg-white rounded-2xl p-4 shadow-sm border-2 overflow-visible ${
+                className={`bg-gray-50 rounded-2xl p-4 shadow-sm border-2 ${
                   user.isApproved ? 'border-green-200' : 'border-yellow-200'
                 }`}
               >
@@ -237,57 +237,61 @@ export default function AdminPage() {
 
                 {/* Action Buttons */}
                 {!user.isApproved && (
-                  <>
+                  <div className="mt-3">
                     {approvingUserId === user._id ? (
-                      <div className="space-y-2 mt-3">
+                      <div className="space-y-2">
                         <div className="flex gap-2 items-center">
                           <input
                             type="number"
                             placeholder="Nhập số tiền cấp (đ)"
                             value={approveBalance}
                             onChange={(e) => setApproveBalance(e.target.value)}
-                            className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-xl focus:border-green-500 focus:outline-none"
+                            className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-green-500 focus:outline-none bg-white text-base"
                             min="0"
                           />
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-3">
                           <button
                             onClick={() => handleApproveWithBalance(user._id)}
-                            className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
+                            className="flex-1 bg-green-500 hover:bg-green-600 py-3 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg border-0"
+                            style={{ color: 'white' }}
                           >
-                            <CheckCircle className="w-4 h-4" />
-                            Xác nhận duyệt
+                            <CheckCircle className="w-5 h-5 text-white" />
+                            <span className="text-white">Xác nhận duyệt</span>
                           </button>
                           <button
                             onClick={() => {
                               setApprovingUserId(null);
                               setApproveBalance('');
                             }}
-                            className="px-4 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-xl font-medium transition-colors"
+                            className="px-6 bg-gray-500 hover:bg-gray-600 py-3 rounded-xl font-bold transition-all shadow-lg border-0"
+                            style={{ color: 'white' }}
                           >
-                            Hủy
+                            <span className="text-white">Hủy</span>
                           </button>
                         </div>
                       </div>
                     ) : (
-                      <div className="flex gap-2 mt-3 relative">
+                      <div className="flex gap-3">
                         <button
                           onClick={() => setApprovingUserId(user._id)}
-                          className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 z-10 pointer-events-auto"
+                          className="flex-1 bg-green-500 hover:bg-green-600 py-3 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg text-white border-0"
+                          style={{ color: 'white' }}
                         >
-                          <CheckCircle className="w-4 h-4" />
-                          Phê duyệt
+                          <CheckCircle className="w-5 h-5 text-white" />
+                          <span className="text-white">Phê duyệt</span>
                         </button>
                         <button
                           onClick={() => handleReject(user._id)}
-                          className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 z-10 pointer-events-auto"
+                          className="flex-1 bg-red-500 hover:bg-red-600 py-3 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg text-white border-0"
+                          style={{ color: 'white' }}
                         >
-                          <XCircle className="w-4 h-4" />
-                          Từ chối
+                          <XCircle className="w-5 h-5 text-white" />
+                          <span className="text-white">Từ chối</span>
                         </button>
                       </div>
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             ))}
