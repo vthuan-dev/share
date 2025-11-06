@@ -17,6 +17,18 @@ export default function Register({ onRegister, onNavigateToLogin }: RegisterProp
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+
+  // Keep a snapshot of credentials until payment is confirmed
+  const [pendingName, setPendingName] = useState('');
+  const [pendingEmail, setPendingEmail] = useState('');
+  const [pendingPassword, setPendingPassword] = useState('');
+
+  // Payment config
+  const bankCode = 'vib';
+  const accountNumber = '081409781';
+  const accountName = 'PHAN NGOC CHUNG';
+  const amount = 200000; // VND
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,12 +36,24 @@ export default function Register({ onRegister, onNavigateToLogin }: RegisterProp
       alert('Mật khẩu không khớp!');
       return;
     }
-    onRegister(name, email, password);
+    // Defer actual registration until payment is confirmed
+    setPendingName(name);
+    setPendingEmail(email);
+    setPendingPassword(password);
+    setShowPayment(true);
   };
+
+  const handleConfirmPaid = () => {
+    setShowPayment(false);
+    onRegister(pendingName, pendingEmail, pendingPassword);
+  };
+
+  const paymentNote = `DANG KY THANH VIEN ${(pendingEmail || email) || ''}`.trim();
+  const qrSrc = `https://img.vietqr.io/image/${bankCode}-${accountNumber}-compact.png?amount=${amount}&addInfo=${encodeURIComponent(paymentNote)}&accountName=${encodeURIComponent(accountName)}`;
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="w-full max-w-[430px] bg-white rounded-[32px] shadow-2xl p-8">
+      <div className="w-full max-w-[430px] bg-white rounded-[32px] shadow-2xl p-8 relative">
         {/* Logo/Header */}
         <div className="text-center mb-8">
           <div className="w-20 h-20 rounded-[24px] mx-auto mb-4 overflow-hidden shadow">
@@ -131,6 +155,50 @@ export default function Register({ onRegister, onNavigateToLogin }: RegisterProp
             </button>
           </p>
         </div>
+        
+        {/* Payment Modal */}
+        {showPayment && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+            <div className="w-full max-w-[430px] bg-white rounded-[32px] shadow-2xl overflow-hidden ring-1 ring-black/5">
+              {/* Header removed as requested */}
+              <div className="px-6 py-5 space-y-5 bg-white">
+                <div className="rounded-2xl bg-red-50/70 p-4 text-sm text-gray-700 shadow-sm ring-1 ring-red-100/60">
+                  <p><span className="font-medium">Ngân hàng:</span> VIB (VietQR)</p>
+                  <p><span className="font-medium">Số tài khoản:</span> 081409781</p>
+                  <p><span className="font-medium">Chủ tài khoản:</span> PHAN NGỌC CHUNG</p>
+                  <p className="mt-1"><span className="font-medium">Số tiền:</span> 200.000 đ</p>
+                  <p className="mt-1"><span className="font-medium">Nội dung chuyển khoản:</span> DANG KY THANH VIEN {pendingEmail || email}</p>
+                </div>
+
+                {/* QR image (VietQR dynamic) */}
+                <div className="rounded-3xl overflow-hidden bg-white p-4 shadow-md border border-gray-100">
+                  <img
+                    src={qrSrc}
+                    alt="QR thanh toán"
+                    className="w-full h-auto"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between gap-3 pt-1 pb-4">
+                  <Button
+                    type="button"
+                    className="flex-1 h-11 bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-full"
+                    onClick={() => setShowPayment(false)}
+                  >
+                    Để sau
+                  </Button>
+                  <Button
+                    type="button"
+                    className="flex-1 h-11 bg-red-600 hover:bg-red-700 text-white rounded-full shadow"
+                    onClick={handleConfirmPaid}
+                  >
+                    Tôi đã chuyển khoản
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
