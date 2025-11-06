@@ -48,8 +48,8 @@ export default function Register({ onRegister, onNavigateToLogin }: RegisterProp
     onRegister(pendingName, pendingEmail, pendingPassword);
   };
 
-  const paymentNote = `DANG KY THANH VIEN ${(pendingEmail || email) || ''}`.trim();
-  const qrSrc = `https://img.vietqr.io/image/${bankCode}-${accountNumber}-compact.png?amount=${amount}&addInfo=${encodeURIComponent(paymentNote)}&accountName=${encodeURIComponent(accountName)}`;
+  const paymentNote = `GOI DANG KY WEB SHARE ${(pendingEmail || email) || ''}`.trim();
+  const qrSrc = `https://img.vietqr.io/image/${bankCode}-${accountNumber}-print.png?amount=${amount}&addInfo=${encodeURIComponent(paymentNote)}&accountName=${encodeURIComponent(accountName)}`;
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
@@ -159,18 +159,26 @@ export default function Register({ onRegister, onNavigateToLogin }: RegisterProp
         {/* Payment Modal */}
         {showPayment && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="w-full max-w-[430px] bg-white rounded-[32px] shadow-2xl overflow-hidden ring-1 ring-black/5">
-              {/* Header removed as requested */}
-              <div className="px-6 py-5 space-y-5 bg-white">
-                <div className="rounded-2xl bg-red-50/70 p-4 text-sm text-gray-700 shadow-sm ring-1 ring-red-100/60">
-                  <p><span className="font-medium">Ngân hàng:</span> VIB (VietQR)</p>
-                  <p><span className="font-medium">Số tài khoản:</span> 081409781</p>
-                  <p><span className="font-medium">Chủ tài khoản:</span> PHAN NGỌC CHUNG</p>
-                  <p className="mt-1"><span className="font-medium">Số tiền:</span> 200.000 đ</p>
-                  <p className="mt-1"><span className="font-medium">Nội dung chuyển khoản:</span> DANG KY THANH VIEN {pendingEmail || email}</p>
+            <div className="w-full max-w-[430px] rounded-[32px] shadow-2xl overflow-hidden">
+              {/* Header */}
+              <div className="relative px-6 py-4 bg-red-600 shadow-lg" style={{backgroundColor: '#dc2626'}}>
+                <div className="flex items-center justify-between gap-4">
+                  <h2 className="text-base font-bold leading-tight flex-1 tracking-wide" style={{color: '#ffffff'}}>
+                    Gói đăng ký sử dụng web share bài viết
+                  </h2>
+                  <button
+                    onClick={() => setShowPayment(false)}
+                    className="text-2xl leading-none font-light flex-shrink-0 transition-opacity hover:opacity-80"
+                    style={{color: '#ffffff'}}
+                  >
+                    ×
+                  </button>
                 </div>
-
-                {/* QR image (VietQR dynamic) */}
+                {/* Decorative bottom border */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-red-800" style={{backgroundColor: '#991b1b'}}></div>
+              </div>
+              <div className="px-6 py-5 space-y-5 bg-white rounded-b-[32px]">
+                {/* QR image (VietQR dynamic) - All info included in QR */}
                 <div className="rounded-3xl overflow-hidden bg-white p-4 shadow-md border border-gray-100">
                   <img
                     src={qrSrc}
