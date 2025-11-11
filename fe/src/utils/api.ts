@@ -55,6 +55,15 @@ export const api = {
     return apiRequest(`/api/admin/users/${userId}/reject`, {
       method: 'DELETE',
     });
+  },
+  incrementShareCount(groupCount: number) {
+    return apiRequest('/api/users/share', {
+      method: 'POST',
+      body: JSON.stringify({ groupCount }),
+    });
+  },
+  getTodayNewUsers() {
+    return apiRequest('/api/users/today-new-users');
   }
 };
 

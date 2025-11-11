@@ -3,11 +3,13 @@ import { useEffect } from 'react';
 
 interface AccountOverviewProps {
   isAuthenticated?: boolean;
+  shareCount?: number;
+  newUsersToday?: number;
   onNavigateToLogin?: () => void;
   onNavigateToRegister?: () => void;
 }
 
-export default function AccountOverview({ isAuthenticated = false, onNavigateToLogin, onNavigateToRegister }: AccountOverviewProps) {
+export default function AccountOverview({ isAuthenticated = false, shareCount = 0, newUsersToday = 0, onNavigateToLogin, onNavigateToRegister }: AccountOverviewProps) {
   useEffect(() => {
     if (isAuthenticated) {
       // Có thể fetch user data ở đây nếu cần
@@ -60,8 +62,8 @@ export default function AccountOverview({ isAuthenticated = false, onNavigateToL
             <span className="text-sm">Tin đăng</span>
           </div>
           <div className="mb-2">
-            <div className="text-2xl">0 tin</div>
-            <div className="text-sm text-gray-500">Đang hiển thị</div>
+            <div className="text-2xl">{shareCount} nhóm</div>
+            <div className="text-sm text-gray-500">Đã chia sẻ</div>
           </div>
           <button className="text-red-600 text-sm flex items-center gap-1">
             Đăng tin
@@ -78,8 +80,8 @@ export default function AccountOverview({ isAuthenticated = false, onNavigateToL
             <span className="text-sm">Liên hệ trong 30 ngày</span>
           </div>
           <div className="mb-2">
-            <div className="text-2xl">1 người</div>
-            <div className="text-sm text-green-600">+ 0 mới vào hôm nay</div>
+            <div className="text-2xl">{newUsersToday} người</div>
+            <div className="text-sm text-green-600">+ {newUsersToday} mới vào hôm nay</div>
           </div>
         </div>
       </div>

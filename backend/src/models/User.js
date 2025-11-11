@@ -8,6 +8,8 @@ const userSchema = new mongoose.Schema(
     isApproved: { type: Boolean, default: false },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
     balance: { type: Number, default: 0 },
+    shareCount: { type: Number, default: 0 },
+    lastShareDate: { type: String, default: null }, // Format: YYYY-MM-DD
   },
   { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } }
 );

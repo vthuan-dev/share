@@ -10,11 +10,11 @@ async function createAdmin() {
   const adminPassword = 'admin123456';
   const adminName = 'Admin';
 
-  // Check if admin already exists
+  // Delete existing admin if exists
   const existing = await User.findOne({ email: adminEmail });
   if (existing) {
-    console.log('❌ Admin user already exists');
-    process.exit(0);
+    await User.deleteOne({ email: adminEmail });
+    console.log('🗑️  Deleted existing admin user');
   }
 
   // Create admin user

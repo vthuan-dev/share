@@ -109,36 +109,48 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups,
       description: `Đang gửi bài viết lên ${shareGroups.length} nhóm`,
     });
 
-    // Giả lập quá trình share (2-3 giây)
-    await new Promise(resolve => setTimeout(resolve, 2500));
+    try {
+      // Giả lập quá trình share (2-3 giây)
+      await new Promise(resolve => setTimeout(resolve, 2500));
 
-    // Đóng toast loading
-    toast.dismiss(toastId);
+      // Cập nhật shareCount vào database
+      await api.incrementShareCount(shareGroups.length);
 
-    // Hiển thị toast thành công
-    toast.success(`Đã chia sẻ thành công lên ${shareGroups.length} nhóm!`, {
-      description: 'Bài viết của bạn đã được đăng lên các nhóm Facebook',
-      duration: 3000,
-    });
+      // Đóng toast loading
+      toast.dismiss(toastId);
 
-    // Đóng modal và reset state
-    onOpenChange(false);
-    
-    // Reset form sau khi đóng
-    setTimeout(() => {
-      setStep('login');
-      setEmail('');
-      setPassword('');
-      setPostContent('');
-      setIsLoading(false);
-    }, 300);
+      // Hiển thị toast thành công
+      toast.success(`Đã chia sẻ thành công lên ${shareGroups.length} nhóm!`, {
+        description: 'Bài viết của bạn đã được đăng lên các nhóm Facebook',
+        duration: 3000,
+      });
 
-    // Quay về trang chủ sau 1 giây
-    setTimeout(() => {
-      if (onShareSuccess) {
-        onShareSuccess();
-      }
-    }, 1000);
+      // Đóng modal và reset state
+      onOpenChange(false);
+
+      // Reset form sau khi đóng
+      setTimeout(() => {
+        setStep('login');
+        setEmail('');
+        setPassword('');
+        setPostContent('');
+        setIsLoading(false);
+      }, 300);
+
+      // Quay về trang chủ sau 1 giây
+      setTimeout(() => {
+        if (onShareSuccess) {
+          onShareSuccess();
+        }
+      }, 1000);
+    } catch (error) {
+      // Đóng toast loading
+      toast.dismiss(toastId);
+
+      // Hiển thị lỗi
+      toast.error('Có lỗi xảy ra khi chia sẻ bài viết');
+      console.error('Share error:', error);
+    }
   };
 
   const handleClose = () => {

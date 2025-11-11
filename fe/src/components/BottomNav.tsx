@@ -10,6 +10,7 @@ interface BottomNavProps {
   currentUserName?: string;
   isAuthenticated?: boolean;
   onRequireLogin?: () => void;
+  onShareSuccess?: () => void;
 }
 
 // Facebook icon component
@@ -19,7 +20,7 @@ const FacebookIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export default function BottomNav({ activeTab, setActiveTab, selectedGroups = [], selectedGroupMeta = {}, currentUserName, isAuthenticated = false, onRequireLogin }: BottomNavProps) {
+export default function BottomNav({ activeTab, setActiveTab, selectedGroups = [], selectedGroupMeta = {}, currentUserName, isAuthenticated = false, onRequireLogin, onShareSuccess }: BottomNavProps) {
   const [isFbSheetOpen, setIsFbSheetOpen] = useState(false);
   const selectedGroupObjects = useMemo(() => selectedGroups.map((id) => (selectedGroupMeta[id] ? selectedGroupMeta[id] : { id, name: id })), [selectedGroups, selectedGroupMeta]);
   const navItems = [
@@ -88,6 +89,9 @@ export default function BottomNav({ activeTab, setActiveTab, selectedGroups = []
         currentUserName={currentUserName}
         onShareSuccess={() => {
           setActiveTab('overview');
+          if (onShareSuccess) {
+            onShareSuccess();
+          }
         }}
       />
 

@@ -25,6 +25,8 @@ function MainApp() {
   const [authScreen, setAuthScreen] = useState<AuthScreen | null>(null);
   const [userName, setUserName] = useState('');
   const [userRole, setUserRole] = useState<'user' | 'admin'>('user');
+  const [shareCount, setShareCount] = useState(0);
+  const [newUsersToday, setNewUsersToday] = useState(0);
   const [activeTab, setActiveTab] = useState('overview');
   const [accountScreen, setAccountScreen] = useState<AccountScreen>('main');
   const [isLoading, setIsLoading] = useState(true);
@@ -37,10 +39,15 @@ function MainApp() {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const user = await api.me();
+          const [user, newUsers] = await Promise.all([
+            api.me(),
+            api.getTodayNewUsers()
+          ]);
           setUserName(user.name);
           const role = user.role || 'user';
           setUserRole(role);
+          setShareCount(user.shareCount || 0);
+          setNewUsersToday(newUsers.count || 0);
           setIsAuthenticated(true);
           if (role === 'admin') {
             window.location.href = '/admin';
@@ -55,6 +62,21 @@ function MainApp() {
     };
     checkAuth();
   }, []);
+
+  const refreshUserData = async () => {
+    try {
+      const [user, newUsers] = await Promise.all([
+        api.me(),
+        api.getTodayNewUsers()
+      ]);
+      setUserName(user.name);
+      setUserRole(user.role || 'user');
+      setShareCount(user.shareCount || 0);
+      setNewUsersToday(newUsers.count || 0);
+    } catch (err) {
+      console.error('Failed to refresh user data:', err);
+    }
+  };
 
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -196,8 +218,10 @@ function MainApp() {
           {activeTab === 'overview' && (
             <>
               {/* Account Overview */}
-              <AccountOverview 
+              <AccountOverview
                 isAuthenticated={isAuthenticated}
+                shareCount={shareCount}
+                newUsersToday={newUsersToday}
                 onNavigateToLogin={() => setAuthScreen('login')}
                 onNavigateToRegister={() => setAuthScreen('register')}
               />
@@ -325,14 +349,15 @@ function MainApp() {
         </div>
 
         {/* Bottom Navigation */}
-        <BottomNav 
-          activeTab={activeTab} 
-          setActiveTab={setActiveTab} 
-          selectedGroups={selectedGroups} 
-          selectedGroupMeta={selectedGroupMeta} 
+        <BottomNav
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          selectedGroups={selectedGroups}
+          selectedGroupMeta={selectedGroupMeta}
           currentUserName={userName}
           isAuthenticated={isAuthenticated}
           onRequireLogin={() => setAuthScreen('login')}
+          onShareSuccess={refreshUserData}
         />
       </div>
     </div>
