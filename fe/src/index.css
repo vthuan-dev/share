@@ -2277,3 +2277,105 @@ html {
     transform: rotate(360deg);
   }
 }
+
+/* Custom animations for dialog */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
+
+.fb-dialog-overlay {
+  backdrop-filter: blur(6px);
+}
+
+.fb-dialog-card {
+  background: #fff;
+  border-radius: 28px;
+  box-shadow: 0 30px 60px rgba(5, 13, 31, 0.25);
+  overflow: hidden;
+  animation: scaleIn 0.24s ease-out;
+}
+
+.fb-dialog-header {
+  background: linear-gradient(135deg, #1b74e4, #1552c6);
+  color: #fff;
+  text-align: center;
+  padding: 1.75rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.fb-dialog-header h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.fb-dialog-header p {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.fb-dialog-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.fb-dialog-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.5rem;
+}
+
+.fb-dialog-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  font-size: 0.95rem;
+  color: #1b1b1b;
+}
+
+.fb-dialog-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #1877f2;
+  margin-top: 0.35rem;
+  box-shadow: 0 0 0 4px rgba(24, 119, 242, 0.15);
+}
