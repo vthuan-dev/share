@@ -22,7 +22,8 @@ export default function Header({ userName = 'Phạm Văn Phong' }: HeaderProps) 
     return name.substring(0, 2).toUpperCase();
   };
 
-  const welcomeText = "Chào mừng bạn đến với website share bài viết lên các hội nhóm facebook do batdongsan.com";
+  const welcomeText = "Chào mừng bạn đến với website share bài viết lên các hội nhóm bất động sản 3 miền 
+";
 
   return (
     <div className="bg-red-600 text-white px-4 pt-4 pb-32">
