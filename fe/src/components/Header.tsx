@@ -22,7 +22,8 @@ export default function Header({ userName = 'Phạm Văn Phong' }: HeaderProps) 
     return name.substring(0, 2).toUpperCase();
   };
 
-  const welcomeText = "Chào mừng bạn đến với website share bài viết lên các hội nhóm bất động sản 3 miền BẮC - TRUNG - NAM";
+  const welcomeText = "Chào mừng bạn đến với website share bài viết lên các hội nhóm bất động sản 3 miền";
+  const regionText = "BẮC - TRUNG - NAM";
 
   return (
     <div className="bg-red-600 text-white px-4 pt-4 pb-32">
@@ -54,8 +55,11 @@ export default function Header({ userName = 'Phạm Văn Phong' }: HeaderProps) 
       {/* Hàng 2: Thông điệp chào mừng - xuống dưới 1-2 dòng */}
       <div className="mt-4">
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-            <p className="text-white text-[13px] leading-[1.5] font-normal tracking-normal text-center text-justify">
+            <p className="text-white text-[13px] leading-[1.5] font-normal tracking-normal text-center">
               {welcomeText}
+            </p>
+            <p className="text-white text-[13px] leading-[1.5] font-semibold tracking-wide text-center mt-1">
+              {regionText}
             </p>
           </div>
       </div>
