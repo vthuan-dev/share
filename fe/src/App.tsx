@@ -25,6 +25,9 @@ function MainApp() {
   const [authScreen, setAuthScreen] = useState<AuthScreen | null>(null);
   const [userName, setUserName] = useState('');
   const [userRole, setUserRole] = useState<'user' | 'admin'>('user');
+  const [userEmail, setUserEmail] = useState('');
+  const [userPhone, setUserPhone] = useState('');
+  const [userAddress, setUserAddress] = useState('');
   const [shareCount, setShareCount] = useState(0);
   const [newUsersToday, setNewUsersToday] = useState(0);
   const [activeTab, setActiveTab] = useState('overview');
@@ -44,6 +47,9 @@ function MainApp() {
             api.getTodayNewUsers()
           ]);
           setUserName(user.name);
+          setUserEmail(user.email || '');
+          setUserPhone(user.phone || '');
+          setUserAddress(user.address || '');
           const role = user.role || 'user';
           setUserRole(role);
           setShareCount(user.shareCount || 0);
@@ -70,6 +76,9 @@ function MainApp() {
         api.getTodayNewUsers()
       ]);
       setUserName(user.name);
+      setUserEmail(user.email || '');
+      setUserPhone(user.phone || '');
+      setUserAddress(user.address || '');
       setUserRole(user.role || 'user');
       setShareCount(user.shareCount || 0);
       setNewUsersToday(newUsers.count || 0);
@@ -83,6 +92,9 @@ function MainApp() {
       const { user, token } = await api.login(email, password);
       localStorage.setItem('token', token);
       setUserName(user.name);
+      setUserEmail(user.email || '');
+      setUserPhone(user.phone || '');
+      setUserAddress(user.address || '');
       const role = user.role || 'user';
       setUserRole(role);
       setIsAuthenticated(true);
@@ -111,6 +123,9 @@ function MainApp() {
       if (result.token) {
         localStorage.setItem('token', result.token);
         setUserName(result.user.name);
+        setUserEmail(result.user.email || '');
+        setUserPhone(result.user.phone || '');
+        setUserAddress(result.user.address || '');
         const role = result.user.role || 'user';
         setUserRole(role);
         setIsAuthenticated(true);
@@ -192,7 +207,22 @@ function MainApp() {
   // Account sub-screens
   if (activeTab === 'account' && accountScreen !== 'main') {
     if (accountScreen === 'profile') {
-      return <Profile onBack={() => setAccountScreen('main')} onNavigateHome={handleNavigateHome} userName={userName} />;
+      return (
+        <Profile
+          onBack={() => setAccountScreen('main')}
+          onNavigateHome={handleNavigateHome}
+          userName={userName}
+          userEmail={userEmail}
+          userPhone={userPhone}
+          userAddress={userAddress}
+          onProfileUpdated={(profile) => {
+            setUserName(profile.name);
+            setUserEmail(profile.email || '');
+            setUserPhone(profile.phone || '');
+            setUserAddress(profile.address || '');
+          }}
+        />
+      );
     }
     if (accountScreen === 'settings') {
       return <Settings onBack={() => setAccountScreen('main')} onNavigateHome={handleNavigateHome} />;

@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, Camera } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { toast } from 'sonner';
+import { api } from '../utils/api';
 
 interface ProfileProps {
   onBack: () => void;
@@ -12,6 +14,7 @@ interface ProfileProps {
   userEmail?: string;
   userPhone?: string;
   userAddress?: string;
+  onProfileUpdated?: (profile: { name: string; email: string; phone?: string; address?: string }) => void;
 }
 
 export default function Profile({
@@ -21,14 +24,50 @@ export default function Profile({
   userEmail,
   userPhone,
   userAddress,
+  onProfileUpdated,
 }: ProfileProps) {
   const [name, setName] = useState(userName);
   const [email, setEmail] = useState(userEmail || '');
   const [phone, setPhone] = useState(userPhone || '');
   const [address, setAddress] = useState(userAddress || '');
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSave = () => {
-    alert('Đã lưu thông tin!');
+  useEffect(() => {
+    setName(userName);
+    setEmail(userEmail || '');
+    setPhone(userPhone || '');
+    setAddress(userAddress || '');
+  }, [userName, userEmail, userPhone, userAddress]);
+
+  const handleSave = async () => {
+    if (!name.trim()) {
+      toast.error('Vui lòng nhập họ và tên');
+      return;
+    }
+    if (!email.trim()) {
+      toast.error('Vui lòng nhập email');
+      return;
+    }
+    setIsSaving(true);
+    try {
+      const result = await api.updateProfile({
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        address: address.trim(),
+      });
+      toast.success('Đã lưu thông tin cá nhân');
+      onProfileUpdated?.({
+        name: result.user.name,
+        email: result.user.email,
+        phone: result.user.phone,
+        address: result.user.address,
+      });
+    } catch (err: any) {
+      toast.error(err.message || 'Cập nhật thất bại');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -118,9 +157,10 @@ export default function Profile({
 
             <Button
               onClick={handleSave}
-              className="w-full h-12 bg-red-600 hover:bg-red-700 text-white rounded-xl mt-6"
+              disabled={isSaving}
+              className="w-full h-12 bg-red-600 hover:bg-red-700 text-white rounded-xl mt-6 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Lưu thay đổi
+              {isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
             </Button>
           </div>
         </div>

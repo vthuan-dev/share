@@ -64,6 +64,12 @@ export const api = {
   },
   getTodayNewUsers() {
     return apiRequest('/api/users/today-new-users');
+  },
+  updateProfile(payload: { name?: string; email?: string; phone?: string; address?: string }) {
+    return apiRequest('/api/users/me', {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
   }
 };
 

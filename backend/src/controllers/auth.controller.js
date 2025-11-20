@@ -47,6 +47,8 @@ export async function login(req, res, next) {
       id: doc._id.toString(), 
       name: doc.name, 
       email: doc.email,
+      phone: doc.phone || '',
+      address: doc.address || '',
       role: doc.role,
       balance: doc.balance || 0,
       isApproved: !!doc.isApproved,

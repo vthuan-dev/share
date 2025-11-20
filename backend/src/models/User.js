@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema(
     passwordHash: { type: String, required: true },
     isApproved: { type: Boolean, default: false },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    phone: { type: String, default: '' },
+    address: { type: String, default: '' },
     balance: { type: Number, default: 0 },
     shareCount: { type: Number, default: 0 },
     lastShareDate: { type: String, default: null }, // Format: YYYY-MM-DD
