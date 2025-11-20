@@ -9,12 +9,23 @@ interface ProfileProps {
   onBack: () => void;
   onNavigateHome: () => void;
   userName: string;
+  userEmail?: string;
+  userPhone?: string;
+  userAddress?: string;
 }
 
-export default function Profile({ onBack, onNavigateHome, userName }: ProfileProps) {
+export default function Profile({
+  onBack,
+  onNavigateHome,
+  userName,
+  userEmail,
+  userPhone,
+  userAddress,
+}: ProfileProps) {
   const [name, setName] = useState(userName);
-  const [email, setEmail] = useState('phong@email.com');
-  const [phone, setPhone] = useState('0987654321');
+  const [email, setEmail] = useState(userEmail || '');
+  const [phone, setPhone] = useState(userPhone || '');
+  const [address, setAddress] = useState(userAddress || '');
 
   const handleSave = () => {
     alert('Đã lưu thông tin!');
@@ -99,6 +110,8 @@ export default function Profile({ onBack, onNavigateHome, userName }: ProfilePro
                 id="address"
                 type="text"
                 placeholder="Nhập địa chỉ của bạn"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
                 className="w-full h-12 rounded-xl border-gray-200"
               />
             </div>

@@ -97,6 +97,7 @@ export default function RegionalGroupsList({ selectedGroups = [], onGroupSelect,
 
   const groups: { [key: string]: Group[] } = {
     north: [
+      // Nhóm Hà Nội
       { id: 's1', name: 'Mua Bán Bất Động Sản Hà Nội_Không Trung Gian', members: '125K thành viên', image: staticImages[0] },
       { id: 's2', name: 'Bất động sản Hà Nội', members: '98K thành viên', image: staticImages[1] },
       { id: 's3', name: 'Bất Động Sản Hà Nội', members: '87K thành viên', image: staticImages[2] },
@@ -108,7 +109,14 @@ export default function RegionalGroupsList({ selectedGroups = [], onGroupSelect,
       { id: 's9', name: 'Bất động sản Hà Nội', members: '92K thành viên', image: staticImages[8] },
       { id: 's10', name: 'BẤT ĐỘNG SẢN - MUA BÁN NHÀ ĐẤT HÀ NỘI ✅', members: '145K thành viên', image: staticImages[9], verified: true },
       { id: 's11', name: 'Mua bán Bất Động Sản HÀ NỘI ✅', members: '103K thành viên', image: staticImages[10], verified: true },
-      { id: 's12', name: 'BẤT ĐỘNG SẢN HÀ NỘI ✅', members: '118K thành viên', image: staticImages[11], verified: true }
+      { id: 's12', name: 'BẤT ĐỘNG SẢN HÀ NỘI ✅', members: '118K thành viên', image: staticImages[11], verified: true },
+      
+      // Nhóm Hải Phòng
+      { id: 's13', name: 'Bất Động Sản Hải Phòng ✅', members: '299K thành viên', image: staticImages[12], verified: true, local: true },
+      { id: 's14', name: 'Hội Mua Bán Nhà Đất Giá Rẻ Hải Phòng ✅', members: '282K thành viên', image: staticImages[13], verified: true, local: true },
+      { id: 's15', name: 'BẤT ĐỘNG SẢN HẢI PHÒNG ✅', members: '159K thành viên', image: staticImages[14], verified: true, local: true },
+      { id: 's16', name: 'Mua Bán Bất Động Sản Hải Phòng', members: '95K thành viên', image: staticImages[15], local: true },
+      { id: 's17', name: 'Nhà Đất Hải Phòng - Mua Bán Cho Thuê', members: '78K thành viên', image: staticImages[16] }
     ],
     central: [
       { id: 'sc1', name: 'Bất Động Sản Đà Nẵng', members: '85K thành viên', image: staticImages[12] },
