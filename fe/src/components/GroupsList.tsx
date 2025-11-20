@@ -78,11 +78,13 @@ export default function GroupsList({ selectedGroups = [], onGroupSelect, selecti
   }
 
   const staticGroups: Group[] = [
+    // Nhóm Hà Nội
     {
       id: '1',
       name: 'Mua Bán Bất Động Sản Hà Nội_Không Trung Gian',
       image: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=60&h=60&fit=crop',
       status: 'Hơn 25 bài viết mới',
+      region: 'Hà Nội',
       verified: false,
       local: true
     },
@@ -91,6 +93,7 @@ export default function GroupsList({ selectedGroups = [], onGroupSelect, selecti
       name: 'Bất động sản Hà Nội',
       image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=60&h=60&fit=crop',
       status: 'Hơn 25 bài viết mới',
+      region: 'Hà Nội',
       verified: false,
       local: false
     },
@@ -99,6 +102,7 @@ export default function GroupsList({ selectedGroups = [], onGroupSelect, selecti
       name: 'Bất Động Sản Hà Nội',
       image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=60&h=60&fit=crop',
       status: 'Hơn 25 bài viết mới',
+      region: 'Hà Nội',
       verified: false,
       local: false
     },
@@ -107,6 +111,7 @@ export default function GroupsList({ selectedGroups = [], onGroupSelect, selecti
       name: 'Mua Bán Bất Động Sản Hà NỘI',
       image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=60&h=60&fit=crop',
       status: 'Hơn 25 bài viết mới',
+      region: 'Hà Nội',
       verified: true,
       local: true
     },
@@ -115,6 +120,7 @@ export default function GroupsList({ selectedGroups = [], onGroupSelect, selecti
       name: 'MUA BÁN BẤT ĐỘNG SẢN THỔ CƯ HÀ NỘI',
       image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=60&h=60&fit=crop',
       status: 'Hơn 25 bài viết mới',
+      region: 'Hà Nội',
       verified: false,
       local: true
     },
@@ -123,6 +129,7 @@ export default function GroupsList({ selectedGroups = [], onGroupSelect, selecti
       name: 'BẤT ĐỘNG SẢN HÀ NỘI',
       image: 'https://images.unsplash.com/photo-1460472178825-e5240623afd5?w=60&h=60&fit=crop',
       status: 'Hơn 25 bài viết mới',
+      region: 'Hà Nội',
       verified: true,
       local: false
     },
@@ -131,6 +138,7 @@ export default function GroupsList({ selectedGroups = [], onGroupSelect, selecti
       name: 'MUA BÁN BẤT ĐỘNG SẢN HÀ NỘI',
       image: 'https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?w=60&h=60&fit=crop',
       status: 'Hơn 25 bài viết mới',
+      region: 'Hà Nội',
       verified: true,
       local: true
     },
@@ -139,6 +147,7 @@ export default function GroupsList({ selectedGroups = [], onGroupSelect, selecti
       name: 'BẤT ĐỘNG SẢN HÀ NỘI 🏘️',
       image: 'https://images.unsplash.com/photo-1449844908441-8829872d2607?w=60&h=60&fit=crop',
       status: 'Hơn 25 bài viết mới',
+      region: 'Hà Nội',
       verified: false,
       local: false
     },
@@ -147,6 +156,7 @@ export default function GroupsList({ selectedGroups = [], onGroupSelect, selecti
       name: 'Bất động sản Hà Nội',
       image: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=60&h=60&fit=crop',
       status: 'Hơn 25 bài viết mới',
+      region: 'Hà Nội',
       verified: false,
       local: false
     },
@@ -155,8 +165,56 @@ export default function GroupsList({ selectedGroups = [], onGroupSelect, selecti
       name: 'BẤT ĐỘNG SẢN - MUA BÁN NHÀ ĐẤT HÀ NỘI',
       image: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=60&h=60&fit=crop',
       status: 'Hơn 25 bài viết mới',
+      region: 'Hà Nội',
       verified: true,
       local: true
+    },
+    
+    // Nhóm Hải Phòng
+    {
+      id: '11',
+      name: 'Bất Động Sản Hải Phòng',
+      image: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=60&h=60&fit=crop',
+      status: 'Hơn 90 bài viết mới',
+      region: 'Hải Phòng',
+      verified: true,
+      local: true
+    },
+    {
+      id: '12',
+      name: 'Hội Mua Bán Nhà Đất Giá Rẻ Hải Phòng',
+      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=60&h=60&fit=crop',
+      status: 'Hơn 90 bài viết mới',
+      region: 'Hải Phòng',
+      verified: true,
+      local: true
+    },
+    {
+      id: '13',
+      name: 'BẤT ĐỘNG SẢN HÀI PHÒNG',
+      image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=60&h=60&fit=crop',
+      status: 'Hơn 90 bài viết mới',
+      region: 'Hải Phòng',
+      verified: true,
+      local: true
+    },
+    {
+      id: '14',
+      name: 'Mua Bán Bất Động Sản Hải Phòng',
+      image: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=60&h=60&fit=crop',
+      status: 'Hơn 50 bài viết mới',
+      region: 'Hải Phòng',
+      verified: false,
+      local: true
+    },
+    {
+      id: '15',
+      name: 'Nhà Đất Hải Phòng - Mua Bán Cho Thuê',
+      image: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=60&h=60&fit=crop',
+      status: 'Hơn 40 bài viết mới',
+      region: 'Hải Phòng',
+      verified: false,
+      local: false
     }
   ];
 
