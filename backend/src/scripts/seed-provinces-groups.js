@@ -127,7 +127,27 @@ const imagePool = [
   `https://images.unsplash.com/photo-1600585154340-be6161a56a0c?${imageParams}`,
   `https://images.unsplash.com/photo-1460472178825-e5240623afd5?${imageParams}`,
   `https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?${imageParams}`,
-  `https://images.unsplash.com/photo-1541888946425-d81bb19240f5?${imageParams}`
+  `https://images.unsplash.com/photo-1541888946425-d81bb19240f5?${imageParams}`,
+  // user-provided real estate images
+  'https://media.vneconomy.vn/images/upload/2022/11/16/56c99f14-2861-4dc2-ae06-3c04c8b22a63.jpg',
+  'https://keenland.com.vn/wp-content/uploads/2024/10/loai-hinh-bat-dong-san-2-keenlandcomvn.jpg',
+  'https://media-cdn-v2.laodong.vn/Storage/NewsPortal/2020/10/18/846390/Dau-Tu-Bat-Dong-San.jpg',
+  'https://cdn.vietnambiz.vn/2019/8/7/1-15651645335071869680987.jpg',
+  'https://i.pinimg.com/736x/63/f9/34/63f93438a3fae83d867938cb1adfef4f.jpg',
+  'https://images.baodantoc.vn/uploads/2022/Th%C3%A1ng%201/Ng%C3%A0y_19/Nga/vincyty-1645.jpg',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTg-9aXpZpMGOr7rQQcrm54iJYBAd33ZEmblw&s',
+  'https://cdn.thuvienphapluat.vn/uploads/tintuc/2022/03/10/bat-dong-san-la-gi.jpg',
+  'https://danviet.ex-cdn.com/files/f1/thumb_w/650/296231569849192448/2022/7/3/vang-16568301719341316800141.jpg',
+  'https://i2-vnexpress.vnecdn.net/2024/10/24/dji-20241003102742-0086-d-enha-2745-2359-1729755550.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=bqrjdO10K0-HnjDoNVFg5g',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTm7BAV2YbkmMPgwxp-XTNRv_PCzDKlu1n1mQ&s',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqxxnXzrqsTSxLDfOABAiUPxznMz4JblQpxg&s',
+  'https://staticfile.batdongsan.com.vn/images/home/cities1/HCM-web-1.jpg',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShSQvXKF7o8tuwSBg1llEWhFGXF7Vkm6Jv9A&s',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4i6mXdJDM-7qS1EeGdwvW3ghbAtqGl4ZBwA&s',
+  'https://media.thuonghieucongluan.vn/uploads/2019_02_08/bat-dong-san-1549590539.png',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPkbDQlH_XXS7GUSc9dv_sJCTJCLPWnPRRBQ&s',
+  'https://suckhoedoisong.qltns.mediacdn.vn/324455921873985536/2023/5/27/bds-1685191751928452029801.jpg',
+  'https://bcp.cdnchinhphu.vn/334894974524682240/2025/1/8/bds-cn-17054593951211988391423-2-17234297639371023957239-1-17363081602221347796039.jpg'
 ];
 
 async function seedGroups() {
