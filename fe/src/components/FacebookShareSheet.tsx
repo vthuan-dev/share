@@ -177,23 +177,21 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups,
       // Đóng toast loading
       toast.dismiss(toastId);
 
-      // Kiểm tra nếu cần đăng ký gói
-      if (error.message && (error.message.includes('cần đăng ký gói') || error.requiresSubscription)) {
-        toast.error(error.message || 'Bạn cần đăng ký gói để tiếp tục chia sẻ', {
-          description: 'Vào tab Tài khoản để đăng ký gói',
-          duration: 5000,
-          action: onRequireSubscription ? {
-            label: 'Đăng ký ngay',
-            onClick: () => {
-              onOpenChange(false);
-              onRequireSubscription();
-            }
-          } : undefined,
-        });
+      // Kiểm tra nếu cần đăng ký gói - kiểm tra cả status code 403
+      const isSubscriptionError = 
+        error.message?.includes('cần đăng ký gói') || 
+        error.requiresSubscription ||
+        (error.message?.includes('403') && error.message?.includes('đăng ký'));
+      
+      if (isSubscriptionError) {
+        // Gọi callback để hiển thị dialog ở App level
+        if (onRequireSubscription) {
+          onRequireSubscription();
+        }
       } else {
         toast.error(error.message || 'Có lỗi xảy ra khi chia sẻ bài viết');
+        console.error('Share error:', error);
       }
-      console.error('Share error:', error);
     }
   };
 
@@ -227,7 +225,7 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups,
     <>
       {/* Overlay */}
       <div 
-        className="fixed inset-0 z-50 bg-black/50 transition-opacity duration-300"
+        className="fixed inset-0 z-40 bg-black/50 transition-opacity duration-300"
         onClick={handleClose}
         style={{ animation: 'fadeIn 0.3s ease-out' }}
       />
@@ -235,7 +233,7 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups,
 
       {/* Drawer Content */}
       <div 
-        className="fixed inset-x-0 bottom-0 z-50 max-h-[90vh] flex flex-col bg-white rounded-t-2xl border-t max-w-[430px] mx-auto"
+        className="fixed inset-x-0 bottom-0 z-40 max-h-[90vh] flex flex-col bg-white rounded-t-2xl border-t max-w-[430px] mx-auto"
         style={{ animation: 'slideUp 0.3s ease-out' }}
       >
         {/* Screen reader titles */}

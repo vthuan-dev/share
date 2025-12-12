@@ -88,8 +88,34 @@ const sampleGroups = [
   'Mua Bán Chung Cư',
   'Cho Thuê Phòng Trọ',
   'Môi Giới Nhà Đất',
-  'BĐS Chính Chủ'
+  'BĐS Chính Chủ',
+  'BĐS Trung Tâm',
+  'BĐS Ven Sông',
+  'BĐS Khu Đông',
+  'BĐS Khu Tây',
+  'BĐS Khu Nam',
+  'BĐS Khu Bắc',
+  'BĐS Ngoại Thành',
+  'Cộng Đồng Nhà Đầu Tư',
+  'Săn Dự Án Mới',
+  'Review Dự Án',
+  'Cộng Đồng Môi Giới',
+  'BĐS Cao Cấp',
+  'BĐS Giá Rẻ',
+  'Nhà Phố',
+  'Căn Hộ',
+  'Shophouse',
+  'Officetel',
+  'Kho Xưởng',
+  'BĐS Nghỉ Dưỡng',
+  'Farmstay',
+  'Đất Khu Công Nghiệp'
 ];
+
+const majorProvinceBoost = {
+  'Hà Nội': { desiredCount: 100, prefix: 'Hà Nội' },
+  'Hồ Chí Minh': { desiredCount: 100, prefix: 'TP.HCM' }
+};
 
 // Kho ảnh đa dạng, tránh trùng lặp nhiều
 const imageParams = 'auto=format&fit=crop&w=200&h=200&q=80';
@@ -166,6 +192,22 @@ const imagePool = [
   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv9XfbrUbG71jtRDNLOxArpCv0Z-P232fOTg&s'
 ];
 
+// Bổ sung ảnh riêng cho Hà Nội & TP.HCM (skyline, landmark)
+const metroImagePool = [
+  // Hà Nội landmarks
+  'https://images.unsplash.com/photo-1505764706515-aa95265c5abc?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1555375392-9c63e01ca1eb?auto=format&fit=crop&w=800&q=80',
+  // HCMC skyline
+  'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=1200&q=80',
+  'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=1000&q=80',
+  'https://images.unsplash.com/photo-1555375392-9c63e01ca1eb?auto=format&fit=crop&w=1000&q=80',
+  'https://images.unsplash.com/photo-1528184039930-bd03972bd974?auto=format&fit=crop&w=1200&q=80',
+  'https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=1200&q=80'
+];
+
 const trustedImageDomains = [
   'unsplash.com',
   'nhadattantru.com',
@@ -194,13 +236,56 @@ async function seedGroups() {
     let globalImageIndex = 0;
 
     for (const province of provinces) {
-      // Tạo 12-14 nhóm mẫu cho mỗi tỉnh, dùng ảnh xoay vòng để tránh trùng nhiều
-      const numGroups = Math.min(14, sampleGroups.length);
-      
-      for (let i = 0; i < numGroups; i++) {
-        const groupNameTemplate = sampleGroups[i % sampleGroups.length];
-        const groupName = `${groupNameTemplate} ${province.name}`;
-        const imageUrl = imagePool[globalImageIndex % imagePool.length];
+      const boost = majorProvinceBoost[province.name];
+      const targetCount = boost?.desiredCount ?? Math.min(14, sampleGroups.length);
+
+      // Tạo danh sách tên nhóm đa dạng
+      const nameVariants = [];
+      const suffixes = boost
+        ? [
+            boost.prefix,
+            `${boost.prefix} - Không Trung Gian`,
+            `${boost.prefix} - Nhà Phố`,
+            `${boost.prefix} - Đất Nền`,
+            `${boost.prefix} - Chung Cư`,
+            `${boost.prefix} - Thổ Cư`,
+            `${boost.prefix} - Ven Sông`,
+            `${boost.prefix} - Cao Cấp`,
+            `${boost.prefix} - Giá Rẻ`,
+            `${boost.prefix} - Chính Chủ`,
+            `${boost.prefix} - Đầu Tư`,
+            `${boost.prefix} - Săn Dự Án`,
+            `${boost.prefix} - Mua Bán Nhanh`,
+            `${boost.prefix} - Cho Thuê`,
+            `${boost.prefix} - Khu Đông`,
+            `${boost.prefix} - Khu Tây`,
+            `${boost.prefix} - Khu Nam`,
+            `${boost.prefix} - Khu Bắc`,
+            `${boost.prefix} - Ngoại Thành`,
+            `${boost.prefix} - Cộng Đồng Nhà Đầu Tư`,
+            `${boost.prefix} - Môi Giới Uy Tín`,
+            `${boost.prefix} - Review Dự Án`,
+            `${boost.prefix} - Tư Vấn Pháp Lý`
+          ]
+        : [province.name];
+
+      while (nameVariants.length < targetCount) {
+        const base = sampleGroups[nameVariants.length % sampleGroups.length];
+        const suffix = suffixes[nameVariants.length % suffixes.length];
+        const numbered =
+          boost && nameVariants.length >= suffixes.length
+            ? ` #${Math.floor(nameVariants.length / suffixes.length) + 1}`
+            : '';
+        nameVariants.push(`${base} ${suffix}${numbered}`);
+      }
+
+      for (let i = 0; i < targetCount; i++) {
+        const groupName = nameVariants[i];
+        const useMetroImage =
+          boost && metroImagePool.length > 0 && i < metroImagePool.length;
+        const imageUrl = useMetroImage
+          ? metroImagePool[i % metroImagePool.length]
+          : imagePool[globalImageIndex % imagePool.length];
         globalImageIndex++;
         
         // Kiểm tra xem nhóm đã tồn tại chưa

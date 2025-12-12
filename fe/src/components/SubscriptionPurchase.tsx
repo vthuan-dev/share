@@ -65,10 +65,11 @@ export default function SubscriptionPurchase({ open, onOpenChange, onPurchaseSuc
 
     try {
       setLoading(true);
-      await api.purchasePlan(selectedPlan.id as '6months' | '12months');
+      const paymentNote = `GOI ${selectedPlan.name.toUpperCase()} WEB SHARE`;
+      await api.purchasePlan(selectedPlan.id as '6months' | '12months', paymentNote);
       
-      toast.success(`Đăng ký ${selectedPlan.name} thành công!`, {
-        description: 'Bạn có thể tiếp tục chia sẻ bài viết',
+      toast.success(`Đã gửi yêu cầu đăng ký ${selectedPlan.name}!`, {
+        description: 'Vui lòng chờ admin xác nhận thanh toán',
       });
 
       setShowQR(false);

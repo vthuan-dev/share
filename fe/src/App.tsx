@@ -16,6 +16,7 @@ import AdminRoute from './components/AdminRoute';
 import BottomNav from './components/BottomNav';
 import SharePostsPanel from './components/SharePostsPanel';
 import SubscriptionPurchase from './components/SubscriptionPurchase';
+import SubscriptionWarningDialog from './components/SubscriptionWarningDialog';
 import { api } from './utils/api';
 import { toast } from 'sonner';
 
@@ -38,6 +39,7 @@ function MainApp() {
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
   const [selectedGroupMeta, setSelectedGroupMeta] = useState<Record<string, { id: string; name?: string; region?: string; image?: string }>>({});
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showSubscriptionWarning, setShowSubscriptionWarning] = useState(false);
 
   // C6heck if user is already logged in
   useEffect(() => {
@@ -385,11 +387,21 @@ function MainApp() {
           onRequireLogin={() => setAuthScreen('login')}
           onShareSuccess={refreshUserData}
           onRequireSubscription={() => {
-            setActiveTab('account');
-            setShowSubscriptionModal(true);
+            setShowSubscriptionWarning(true);
           }}
         />
       </div>
+
+      {/* Subscription Warning Dialog */}
+      <SubscriptionWarningDialog
+        open={showSubscriptionWarning}
+        onOpenChange={setShowSubscriptionWarning}
+        onRegister={() => {
+          setShowSubscriptionWarning(false);
+          setActiveTab('account');
+          setShowSubscriptionModal(true);
+        }}
+      />
 
       {/* Subscription Purchase Modal */}
       <SubscriptionPurchase

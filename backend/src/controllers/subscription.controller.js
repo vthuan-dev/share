@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { User } from '../models/User.js';
+import { SubscriptionRequest } from '../models/SubscriptionRequest.js';
 
 const subscriptionPlans = {
   '6months': {
@@ -16,6 +17,7 @@ const subscriptionPlans = {
 
 const purchaseSchema = z.object({
   planId: z.enum(['6months', '12months']),
+  paymentNote: z.string().optional(),
 });
 
 // Lấy danh sách gói đăng ký
@@ -38,10 +40,10 @@ export async function getPlans(req, res, next) {
   }
 }
 
-// Mua gói đăng ký (giả lập - trong thực tế cần tích hợp payment gateway)
+// Mua gói đăng ký - tạo pending request chờ admin xác nhận
 export async function purchasePlan(req, res, next) {
   try {
-    const { planId } = purchaseSchema.parse(req.body);
+    const { planId, paymentNote } = purchaseSchema.parse(req.body);
     const plan = subscriptionPlans[planId];
     
     if (!plan) {
@@ -51,31 +53,26 @@ export async function purchasePlan(req, res, next) {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    // Tính ngày hết hạn
-    const now = new Date();
-    const expiresAt = new Date(now);
-    expiresAt.setMonth(expiresAt.getMonth() + plan.duration);
-
-    // Nếu đã có subscription, cộng thêm vào ngày hết hạn hiện tại
-    if (user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > now) {
-      const currentExpires = new Date(user.subscriptionExpiresAt);
-      currentExpires.setMonth(currentExpires.getMonth() + plan.duration);
-      expiresAt.setTime(currentExpires.getTime());
-    }
-
-    // Cập nhật subscription
-    await User.findByIdAndUpdate(req.user.id, {
-      subscriptionExpiresAt: expiresAt,
+    // Tạo pending subscription request
+    const request = await SubscriptionRequest.create({
+      userId: req.user.id,
+      planId,
+      planName: plan.name,
+      price: plan.price,
+      status: 'pending',
+      paymentNote: paymentNote || `GOI ${plan.name.toUpperCase()} WEB SHARE`,
     });
 
     return res.json({
       success: true,
-      message: `Đăng ký ${plan.name} thành công!`,
-      subscription: {
+      message: `Đã gửi yêu cầu đăng ký ${plan.name}. Vui lòng chờ admin xác nhận.`,
+      request: {
+        id: request._id.toString(),
         planId,
         planName: plan.name,
-        expiresAt: expiresAt.toISOString(),
         price: plan.price,
+        status: 'pending',
+        createdAt: request.createdAt,
       },
     });
   } catch (err) {
@@ -93,12 +90,24 @@ export async function getSubscriptionStatus(req, res, next) {
     const hasActiveSubscription = user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > now;
     const canShareFree = !user.hasUsedFreeShare;
 
+    // Kiểm tra có pending request không
+    const pendingRequest = await SubscriptionRequest.findOne({
+      userId: req.user.id,
+      status: 'pending',
+    }).sort({ createdAt: -1 }).lean();
+
     return res.json({
       success: true,
       hasActiveSubscription: !!hasActiveSubscription,
       canShareFree,
       subscriptionExpiresAt: user.subscriptionExpiresAt,
       hasUsedFreeShare: !!user.hasUsedFreeShare,
+      pendingRequest: pendingRequest ? {
+        id: pendingRequest._id.toString(),
+        planName: pendingRequest.planName,
+        price: pendingRequest.price,
+        createdAt: pendingRequest.createdAt,
+      } : null,
     });
   } catch (err) {
     next(err);

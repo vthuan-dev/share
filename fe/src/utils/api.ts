@@ -12,8 +12,14 @@ export async function apiRequest(path: string, options: RequestInit = {}) {
     const body = await res.json().catch(() => ({}));
     const errors = Array.isArray(body.errors) ? body.errors : [];
     const message = body.error || errors.join('\n') || `Request failed: ${res.status}`;
-    const e = new Error(message) as Error & { details?: string[] };
+    const e = new Error(message) as Error & { details?: string[]; requiresSubscription?: boolean; status?: number };
     if (errors.length) e.details = errors;
+    if (body.requiresSubscription !== undefined) e.requiresSubscription = body.requiresSubscription;
+    e.status = res.status;
+    // Nếu là 403 và message có chứa "đăng ký" thì đánh dấu là subscription error
+    if (res.status === 403 && (message.includes('đăng ký') || message.includes('gói') || body.requiresSubscription)) {
+      e.requiresSubscription = true;
+    }
     throw e;
   }
   return res.json();
@@ -69,6 +75,9 @@ export const api = {
       method: 'DELETE',
     });
   },
+  getAllSharePosts() {
+    return apiRequest('/api/admin/share-posts');
+  },
   incrementShareCount(groupCount: number) {
     return apiRequest('/api/users/share', {
       method: 'POST',
@@ -102,10 +111,24 @@ export const api = {
   getSubscriptionStatus() {
     return apiRequest('/api/subscription/status');
   },
-  purchasePlan(planId: '6months' | '12months') {
+  purchasePlan(planId: '6months' | '12months', paymentNote?: string) {
     return apiRequest('/api/subscription/purchase', {
       method: 'POST',
-      body: JSON.stringify({ planId }),
+      body: JSON.stringify({ planId, paymentNote }),
+    });
+  },
+  // Admin subscription requests APIs
+  getPendingSubscriptionRequests() {
+    return apiRequest('/api/admin/subscription-requests');
+  },
+  approveSubscriptionRequest(requestId: string) {
+    return apiRequest(`/api/admin/subscription-requests/${requestId}/approve`, {
+      method: 'POST',
+    });
+  },
+  rejectSubscriptionRequest(requestId: string) {
+    return apiRequest(`/api/admin/subscription-requests/${requestId}/reject`, {
+      method: 'POST',
     });
   }
 };
