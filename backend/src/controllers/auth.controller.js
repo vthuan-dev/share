@@ -20,10 +20,34 @@ export async function register(req, res, next) {
     const existing = await User.findOne({ email }).lean();
     if (existing) return res.status(409).json({ error: 'Email đã tồn tại' });
     const hash = bcrypt.hashSync(password, 10);
-    const created = await User.create({ name, email, passwordHash: hash, isApproved: false });
+    const created = await User.create({ 
+      name, 
+      email, 
+      passwordHash: hash, 
+      isApproved: true, // Tự động phê duyệt
+      hasUsedFreeShare: false // Chưa dùng lần share miễn phí
+    });
+    
+    // Tự động đăng nhập sau khi đăng ký
+    const user = { 
+      id: created._id.toString(), 
+      name: created.name, 
+      email: created.email,
+      phone: created.phone || '',
+      address: created.address || '',
+      role: created.role,
+      balance: created.balance || 0,
+      isApproved: true,
+      hasUsedFreeShare: false,
+      subscriptionExpiresAt: created.subscriptionExpiresAt,
+      createdAt: created.createdAt,
+    };
+    const token = signToken(user);
+    
     res.status(201).json({ 
-      message: 'Đăng ký thành công! Vui lòng đợi admin phê duyệt tài khoản.',
-      pending: true 
+      message: 'Đăng ký thành công!',
+      user,
+      token
     });
   } catch (err) {
     next(err);
@@ -38,10 +62,7 @@ export async function login(req, res, next) {
     const ok = bcrypt.compareSync(password, doc.passwordHash);
     if (!ok) return res.status(401).json({ error: 'Sai email hoặc mật khẩu' });
     
-    // Check if account is approved
-    if (!doc.isApproved) {
-      return res.status(403).json({ error: 'Tài khoản chưa được phê duyệt. Vui lòng đợi admin xác nhận.' });
-    }
+    // Bỏ check isApproved - cho phép đăng nhập tự do
     
     const user = { 
       id: doc._id.toString(), 
@@ -52,6 +73,8 @@ export async function login(req, res, next) {
       role: doc.role,
       balance: doc.balance || 0,
       isApproved: !!doc.isApproved,
+      hasUsedFreeShare: !!doc.hasUsedFreeShare,
+      subscriptionExpiresAt: doc.subscriptionExpiresAt,
       createdAt: doc.createdAt,
     };
     const token = signToken(user);

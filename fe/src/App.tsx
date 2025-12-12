@@ -14,6 +14,8 @@ import Settings from './components/Settings';
 import Security from './components/Security';
 import AdminRoute from './components/AdminRoute';
 import BottomNav from './components/BottomNav';
+import SharePostsPanel from './components/SharePostsPanel';
+import SubscriptionPurchase from './components/SubscriptionPurchase';
 import { api } from './utils/api';
 import { toast } from 'sonner';
 
@@ -35,6 +37,7 @@ function MainApp() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
   const [selectedGroupMeta, setSelectedGroupMeta] = useState<Record<string, { id: string; name?: string; region?: string; image?: string }>>({});
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   // C6heck if user is already logged in
   useEffect(() => {
@@ -112,15 +115,8 @@ function MainApp() {
     try {
       const result = await api.register(name, email, password);
       
-      // Check if account needs approval
-      if (result.pending) {
-        toast.success(result.message || 'Đăng ký thành công! Vui lòng đợi admin phê duyệt.');
-        setAuthScreen('login');
-        return;
-      }
-      
-      // Old flow - auto login (for backward compatibility)
-      if (result.token) {
+      // Đăng ký tự do - tự động đăng nhập
+      if (result.token && result.user) {
         localStorage.setItem('token', result.token);
         setUserName(result.user.name);
         setUserEmail(result.user.email || '');
@@ -130,10 +126,15 @@ function MainApp() {
         setUserRole(role);
         setIsAuthenticated(true);
         setAuthScreen(null); // Quay về trang chủ sau khi register
+        
+        toast.success('Đăng ký thành công! Bạn có 1 lần share miễn phí.');
+        
         if (role === 'admin') {
           window.location.href = '/admin';
           return;
         }
+      } else {
+        toast.error('Đăng ký thất bại. Vui lòng thử lại.');
       }
     } catch (err: any) {
       toast.error(err.message || 'Đăng ký thất bại');
@@ -342,13 +343,7 @@ function MainApp() {
           )}
 
           {activeTab === 'customers' && (
-            <div className="pt-4">
-              <h2 className="mb-4">Khách Hàng</h2>
-              <div className="bg-gray-50 rounded-2xl p-6 text-center">
-                <UserCircle className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                <p className="text-gray-600">Danh sách khách hàng của bạn</p>
-              </div>
-            </div>
+            <SharePostsPanel />
           )}
 
           {activeTab === 'account' && (
@@ -372,6 +367,7 @@ function MainApp() {
                   onNavigateToAdmin={userRole === 'admin' ? () => setAccountScreen('admin') : undefined}
                   onLogout={handleLogout}
                   userRole={userRole}
+                  onOpenSubscription={() => setShowSubscriptionModal(true)}
                 />
               )}
             </div>
@@ -388,8 +384,22 @@ function MainApp() {
           isAuthenticated={isAuthenticated}
           onRequireLogin={() => setAuthScreen('login')}
           onShareSuccess={refreshUserData}
+          onRequireSubscription={() => {
+            setActiveTab('account');
+            setShowSubscriptionModal(true);
+          }}
         />
       </div>
+
+      {/* Subscription Purchase Modal */}
+      <SubscriptionPurchase
+        open={showSubscriptionModal}
+        onOpenChange={setShowSubscriptionModal}
+        onPurchaseSuccess={() => {
+          refreshUserData();
+          setShowSubscriptionModal(false);
+        }}
+      />
     </div>
   );
 }

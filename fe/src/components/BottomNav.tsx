@@ -11,6 +11,7 @@ interface BottomNavProps {
   isAuthenticated?: boolean;
   onRequireLogin?: () => void;
   onShareSuccess?: () => void;
+  onRequireSubscription?: () => void;
 }
 
 // Facebook icon component
@@ -20,7 +21,7 @@ const FacebookIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export default function BottomNav({ activeTab, setActiveTab, selectedGroups = [], selectedGroupMeta = {}, currentUserName, isAuthenticated = false, onRequireLogin, onShareSuccess }: BottomNavProps) {
+export default function BottomNav({ activeTab, setActiveTab, selectedGroups = [], selectedGroupMeta = {}, currentUserName, isAuthenticated = false, onRequireLogin, onShareSuccess, onRequireSubscription }: BottomNavProps) {
   const [isFbSheetOpen, setIsFbSheetOpen] = useState(false);
   const selectedGroupObjects = useMemo(() => selectedGroups.map((id) => (selectedGroupMeta[id] ? selectedGroupMeta[id] : { id, name: id })), [selectedGroups, selectedGroupMeta]);
   const navItems = [
@@ -42,7 +43,7 @@ export default function BottomNav({ activeTab, setActiveTab, selectedGroups = []
     },
     {
       id: 'customers',
-      label: 'Khách hàng',
+      label: 'Bài viết',
       icon: UserCircle
     },
     {
@@ -93,6 +94,7 @@ export default function BottomNav({ activeTab, setActiveTab, selectedGroups = []
             onShareSuccess();
           }
         }}
+        onRequireSubscription={onRequireSubscription}
       />
 
       <div className="flex items-center justify-around px-2 pb-safe">

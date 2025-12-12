@@ -5,13 +5,15 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true, index: true },
     passwordHash: { type: String, required: true },
-    isApproved: { type: Boolean, default: false },
+    isApproved: { type: Boolean, default: true }, // Mặc định true - tự do đăng ký
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
     phone: { type: String, default: '' },
     address: { type: String, default: '' },
     balance: { type: Number, default: 0 },
     shareCount: { type: Number, default: 0 },
     lastShareDate: { type: String, default: null }, // Format: YYYY-MM-DD
+    hasUsedFreeShare: { type: Boolean, default: false }, // Đã dùng lần share miễn phí chưa
+    subscriptionExpiresAt: { type: Date, default: null }, // Ngày hết hạn gói đăng ký
   },
   { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } }
 );

@@ -11,14 +11,16 @@ interface FacebookShareSheetProps {
   selectedGroups: Array<{ id: string; name?: string; region?: string; image?: string }> | string[];
   currentUserName?: string;
   onShareSuccess?: () => void; // Callback khi share thành công để quay về trang chủ
+  onRequireSubscription?: () => void; // Callback khi cần subscription
 }
 
-export default function FacebookShareSheet({ open, onOpenChange, selectedGroups, currentUserName, onShareSuccess }: FacebookShareSheetProps) {
+export default function FacebookShareSheet({ open, onOpenChange, selectedGroups, currentUserName, onShareSuccess, onRequireSubscription }: FacebookShareSheetProps) {
   const [step, setStep] = useState<'login' | 'share'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [postContent, setPostContent] = useState('');
+  const [postLink, setPostLink] = useState(''); // Link bài viết Facebook
   const [isLoading, setIsLoading] = useState(false);
   const [shareGroups, setShareGroups] = useState<Array<{ id: string; name: string; region?: string; image?: string }>>([]);
 
@@ -106,8 +108,14 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups,
 
 
   const handleShare = async () => {
-    if (!postContent.trim()) {
-      toast.error('Vui lòng nhập nội dung bài viết');
+    if (!postLink.trim()) {
+      toast.error('Vui lòng nhập link bài viết Facebook');
+      return;
+    }
+
+    // Validate Facebook link
+    if (!postLink.includes('facebook.com') && !postLink.includes('fb.com')) {
+      toast.error('Vui lòng nhập link bài viết Facebook hợp lệ');
       return;
     }
 
@@ -122,20 +130,29 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups,
     });
 
     try {
-      // Giả lập quá trình share (2-3 giây)
-      await new Promise(resolve => setTimeout(resolve, 2500));
-
-      // Cập nhật shareCount vào database
-      await api.incrementShareCount(shareGroups.length);
+      const groupIds = shareGroups.map(g => g.id);
+      
+      // Gọi API share với link bài viết
+      const result = await api.sharePost(postLink, groupIds, shareGroups.length);
 
       // Đóng toast loading
       toast.dismiss(toastId);
 
       // Hiển thị toast thành công
-      toast.success(`Đã chia sẻ thành công lên ${shareGroups.length} nhóm!`, {
-        description: 'Bài viết của bạn đã được đăng lên các nhóm Facebook',
-        duration: 3000,
+      toast.success(result.message || `Đã chia sẻ thành công lên ${shareGroups.length} nhóm!`, {
+        description: result.isFreeShare 
+          ? 'Lần chia sẻ miễn phí của bạn. Lần tiếp theo cần đăng ký gói.'
+          : 'Bài viết của bạn đã được đăng lên các nhóm Facebook',
+        duration: 5000,
       });
+
+      // Tự động mở link bài viết trong tab mới để user share vào các nhóm
+      if (postLink.trim()) {
+        // Mở link trong tab mới sau 0.5 giây để user thấy thông báo thành công
+        setTimeout(() => {
+          window.open(postLink.trim(), '_blank', 'noopener,noreferrer');
+        }, 500);
+      }
 
       // Đóng modal và reset state
       onOpenChange(false);
@@ -146,6 +163,7 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups,
         setEmail('');
         setPassword('');
         setPostContent('');
+        setPostLink('');
         setIsLoading(false);
       }, 300);
 
@@ -155,25 +173,40 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups,
           onShareSuccess();
         }
       }, 1000);
-    } catch (error) {
+    } catch (error: any) {
       // Đóng toast loading
       toast.dismiss(toastId);
 
-      // Hiển thị lỗi
-      toast.error('Có lỗi xảy ra khi chia sẻ bài viết');
+      // Kiểm tra nếu cần đăng ký gói
+      if (error.message && (error.message.includes('cần đăng ký gói') || error.requiresSubscription)) {
+        toast.error(error.message || 'Bạn cần đăng ký gói để tiếp tục chia sẻ', {
+          description: 'Vào tab Tài khoản để đăng ký gói',
+          duration: 5000,
+          action: onRequireSubscription ? {
+            label: 'Đăng ký ngay',
+            onClick: () => {
+              onOpenChange(false);
+              onRequireSubscription();
+            }
+          } : undefined,
+        });
+      } else {
+        toast.error(error.message || 'Có lỗi xảy ra khi chia sẻ bài viết');
+      }
       console.error('Share error:', error);
     }
   };
 
   const handleClose = () => {
     onOpenChange(false);
-    setTimeout(() => {
-      setStep('login');
-      setEmail('');
-      setPassword('');
-      setPostContent('');
-      setIsLoading(false);
-    }, 300);
+      setTimeout(() => {
+        setStep('login');
+        setEmail('');
+        setPassword('');
+        setPostContent('');
+        setPostLink('');
+        setIsLoading(false);
+      }, 300);
   };
 
   // Prevent body scroll when drawer is open
@@ -332,7 +365,7 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups,
               <h2 className="text-base font-medium text-gray-900">Tạo bài viết</h2>
               <button
                 onClick={handleShare}
-                disabled={!postContent}
+                disabled={!postLink.trim()}
                 className="h-9 px-6 bg-[#1877f2] hover:bg-[#166fe5] text-white rounded-lg font-medium transition-all disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed inline-flex items-center justify-center text-sm"
                 type="button"
               >
@@ -363,12 +396,30 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups,
                   </div>
                 </div>
 
-                {/* Post Content */}
+                {/* Post Link - Required */}
+                <div className="mb-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Link bài viết Facebook <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://www.facebook.com/..."
+                    value={postLink}
+                    onChange={(e) => setPostLink(e.target.value)}
+                    className="w-full h-12 rounded-lg border border-gray-300 bg-gray-50 px-4 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1877f2] focus:border-transparent transition-all"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Dán link bài viết Facebook bạn muốn chia sẻ
+                  </p>
+                </div>
+
+                {/* Post Content - Optional */}
                 <textarea
-                  placeholder="Bạn đang nghĩ gì?"
+                  placeholder="Bạn đang nghĩ gì? (Tùy chọn)"
                   value={postContent}
                   onChange={(e) => setPostContent(e.target.value)}
-                  className="w-full min-h-[120px] text-base text-gray-900 placeholder-gray-400 resize-none focus:outline-none"
+                  className="w-full min-h-[100px] text-base text-gray-900 placeholder-gray-400 resize-none focus:outline-none"
                 />
               </div>
 

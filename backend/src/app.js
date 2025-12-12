@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/users.routes.js';
 import groupRoutes from './routes/groups.routes.js';
 import adminRoutes from './routes/admin.routes.js';
+import subscriptionRoutes from './routes/subscription.routes.js';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/subscription', subscriptionRoutes);
 
 app.use(errorHandler);
 

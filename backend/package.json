@@ -7,7 +7,8 @@
     "dev": "node --watch ./src/server.js",
     "start": "node ./src/server.js",
     "db:reset": "node ./src/scripts/reset-db.js",
-    "create-admin": "node ./src/scripts/create-admin.js"
+    "create-admin": "node ./src/scripts/create-admin.js",
+    "seed-provinces": "node ./src/scripts/seed-provinces-groups.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

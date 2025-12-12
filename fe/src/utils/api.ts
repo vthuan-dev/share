@@ -35,8 +35,21 @@ export const api = {
   me() {
     return apiRequest('/api/users/me');
   },
-  groups() {
-    return apiRequest('/api/groups');
+  groups(region?: string, province?: string) {
+    const params = new URLSearchParams();
+    if (region) params.append('region', region);
+    if (province) params.append('province', province);
+    const query = params.toString();
+    return apiRequest(`/api/groups${query ? '?' + query : ''}`);
+  },
+  getRegions() {
+    return apiRequest('/api/groups/regions');
+  },
+  getProvinces(region?: string) {
+    const params = new URLSearchParams();
+    if (region) params.append('region', region);
+    const query = params.toString();
+    return apiRequest(`/api/groups/provinces${query ? '?' + query : ''}`);
   },
   // Admin APIs
   getPendingUsers() {
@@ -69,6 +82,30 @@ export const api = {
     return apiRequest('/api/users/me', {
       method: 'PUT',
       body: JSON.stringify(payload),
+    });
+  },
+  // Share post with link
+  sharePost(postLink: string, groupIds: string[], groupCount: number) {
+    return apiRequest('/api/users/share-post', {
+      method: 'POST',
+      body: JSON.stringify({ postLink, groupIds, groupCount }),
+    });
+  },
+  // Get shared posts
+  getSharePosts() {
+    return apiRequest('/api/users/share-posts');
+  },
+  // Subscription APIs
+  getSubscriptionPlans() {
+    return apiRequest('/api/subscription/plans');
+  },
+  getSubscriptionStatus() {
+    return apiRequest('/api/subscription/status');
+  },
+  purchasePlan(planId: '6months' | '12months') {
+    return apiRequest('/api/subscription/purchase', {
+      method: 'POST',
+      body: JSON.stringify({ planId }),
     });
   }
 };

@@ -1,4 +1,4 @@
-import { ChevronRight, User, Settings as SettingsIcon, Shield, LogOut, ShieldCheck } from 'lucide-react';
+import { ChevronRight, User, Settings as SettingsIcon, Shield, LogOut, ShieldCheck, CreditCard } from 'lucide-react';
 
 interface AccountPageProps {
   onNavigateToProfile: () => void;
@@ -7,6 +7,7 @@ interface AccountPageProps {
   onNavigateToAdmin?: () => void;
   onLogout: () => void;
   userRole?: 'user' | 'admin';
+  onOpenSubscription?: () => void;
 }
 
 export default function AccountPage({
@@ -15,7 +16,8 @@ export default function AccountPage({
   onNavigateToSecurity,
   onNavigateToAdmin,
   onLogout,
-  userRole = 'user'
+  userRole = 'user',
+  onOpenSubscription
 }: AccountPageProps) {
   const menuItems = [
     ...(userRole === 'admin' && onNavigateToAdmin ? [{
@@ -81,6 +83,22 @@ export default function AccountPage({
           })}
         </div>
       </div>
+
+      {/* Subscription Button */}
+      {onOpenSubscription && (
+        <button
+          onClick={onOpenSubscription}
+          className="w-full bg-gradient-to-r from-red-600 to-orange-600 rounded-2xl p-4 flex items-center justify-between hover:from-red-700 hover:to-orange-700 transition-colors mb-4 shadow-lg"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+              <CreditCard className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-white font-medium">Đăng ký gói sử dụng</span>
+          </div>
+          <ChevronRight className="w-5 h-5 text-white" />
+        </button>
+      )}
 
       {/* Logout Button */}
       <button

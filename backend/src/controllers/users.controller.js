@@ -1,5 +1,7 @@
 import { z } from 'zod';
+import mongoose from 'mongoose';
 import { User } from '../models/User.js';
+import { SharePost } from '../models/SharePost.js';
 
 const updateProfileSchema = z.object({
   name: z.string().trim().min(1).max(120).optional(),
@@ -32,6 +34,10 @@ export async function me(req, res, next) {
       });
     }
 
+    // Check subscription status
+    const now = new Date();
+    const hasActiveSubscription = user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > now;
+
     return res.json({
       id: user._id.toString(),
       name: user.name,
@@ -42,6 +48,9 @@ export async function me(req, res, next) {
       balance: user.balance || 0,
       isApproved: !!user.isApproved,
       shareCount: shareCount,
+      hasUsedFreeShare: !!user.hasUsedFreeShare,
+      hasActiveSubscription: !!hasActiveSubscription,
+      subscriptionExpiresAt: user.subscriptionExpiresAt,
       createdAt: user.createdAt,
     });
   } catch (err) {
@@ -121,6 +130,131 @@ export async function getTodayNewUsers(req, res, next) {
   }
 }
 
+// Share bài viết với link
+export async function sharePost(req, res, next) {
+  try {
+    const { postLink, groupIds, groupCount } = req.body;
+
+    if (!postLink || !postLink.trim()) {
+      return res.status(400).json({ error: 'Vui lòng nhập link bài viết' });
+    }
+
+    if (!groupIds || !Array.isArray(groupIds) || groupIds.length === 0) {
+      return res.status(400).json({ error: 'Vui lòng chọn ít nhất một nhóm' });
+    }
+
+    const count = groupCount || groupIds.length;
+    if (count < 1) {
+      return res.status(400).json({ error: 'Số lượng nhóm không hợp lệ' });
+    }
+
+    // Get current user
+    const currentUser = await User.findById(req.user.id);
+    if (!currentUser) return res.status(404).json({ error: 'User not found' });
+
+    // Check if user can share (free first time or has active subscription)
+    const now = new Date();
+    const hasActiveSubscription = currentUser.subscriptionExpiresAt && new Date(currentUser.subscriptionExpiresAt) > now;
+    const canShareFree = !currentUser.hasUsedFreeShare;
+    
+    if (!canShareFree && !hasActiveSubscription) {
+      return res.status(403).json({ 
+        error: 'Bạn cần đăng ký gói để tiếp tục chia sẻ. Lần đầu chia sẻ miễn phí, từ lần 2 cần đăng ký gói.',
+        requiresSubscription: true
+      });
+    }
+
+    // Get current date in YYYY-MM-DD format (Vietnam timezone UTC+7)
+    const today = new Date();
+    today.setHours(today.getHours() + 7);
+    const todayStr = today.toISOString().split('T')[0];
+
+    // Mark as used free share if this is first time
+    const isFreeShare = canShareFree;
+
+    // Convert groupIds from string to ObjectId
+    const groupObjectIds = groupIds.map(id => {
+      try {
+        return new mongoose.Types.ObjectId(id);
+      } catch (err) {
+        // If invalid ObjectId, return null (will be filtered out)
+        return null;
+      }
+    }).filter(id => id !== null);
+
+    // Create share post record
+    const sharePost = await SharePost.create({
+      userId: currentUser._id,
+      postLink: postLink.trim(),
+      groupIds: groupObjectIds,
+      groupCount: count,
+      isFreeShare: isFreeShare,
+    });
+
+    // Update user - mark free share as used
+    await User.findByIdAndUpdate(req.user.id, {
+      hasUsedFreeShare: true,
+    });
+
+    // Update share count separately (vì không thể mix $inc với field thường)
+    if (currentUser.lastShareDate === todayStr) {
+      // Same day - increment
+      await User.findByIdAndUpdate(req.user.id, {
+        $inc: { shareCount: count },
+        lastShareDate: todayStr,
+      });
+    } else {
+      // New day - reset and set
+      await User.findByIdAndUpdate(req.user.id, {
+        shareCount: count,
+        lastShareDate: todayStr,
+      });
+    }
+
+    return res.json({
+      success: true,
+      sharePost: {
+        id: sharePost._id.toString(),
+        postLink: sharePost.postLink,
+        groupCount: sharePost.groupCount,
+        isFreeShare: sharePost.isFreeShare,
+        createdAt: sharePost.createdAt,
+      },
+      message: isFreeShare 
+        ? 'Chia sẻ miễn phí thành công! Lần tiếp theo bạn cần đăng ký gói để tiếp tục.'
+        : 'Chia sẻ thành công!',
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// Lấy danh sách bài viết đã share
+export async function getSharePosts(req, res, next) {
+  try {
+    const sharePosts = await SharePost.find({ userId: req.user.id })
+      .sort({ createdAt: -1 })
+      .limit(50)
+      .populate('groupIds', 'name region province')
+      .lean();
+
+    return res.json({
+      success: true,
+      posts: sharePosts.map(post => ({
+        id: post._id.toString(),
+        postLink: post.postLink,
+        groupCount: post.groupCount,
+        groups: post.groupIds || [],
+        isFreeShare: post.isFreeShare,
+        createdAt: post.createdAt,
+      })),
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// Legacy function - giữ lại để tương thích
 export async function incrementShareCount(req, res, next) {
   try {
     const { groupCount } = req.body;
