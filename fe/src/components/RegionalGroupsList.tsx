@@ -82,8 +82,41 @@ export default function RegionalGroupsList({ selectedGroups = [], onGroupSelect,
     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPkbDQlH_XXS7GUSc9dv_sJCTJCLPWnPRRBQ&s',
     'https://suckhoedoisong.qltns.mediacdn.vn/324455921873985536/2023/5/27/bds-1685191751928452029801.jpg',
     'https://bcp.cdnchinhphu.vn/334894974524682240/2025/1/8/bds-cn-17054593951211988391423-2-17234297639371023957239-1-17363081602221347796039.jpg'
+    ,
+    // user provided batch 2
+    'https://nhadattantru.com/upload/filemanager/files/dat-nen-hung-yen-1.jpg',
+    'https://hoanganhinvest.com/wp-content/uploads/2025/05/bat-dong-san-tay-ninh-1.jpg',
+    'https://themeadowbinhchanh.com.vn/wp-content/uploads/2025/05/thi-truong-nha-dat-tay-ninh-2025--960x620.jpg',
+    'https://images2.thanhnien.vn/zoom/686_429/Uploaded/quochung.qc/2020_10_26/tayninh/hinh-21_PQSN.jpg',
+    'https://media.thuonghieucongluan.vn/uploads/2024/10/06/golden-city-1728210673.jpg',
+    'https://cafefcdn.com/thumb_w/640/pr/2021/1617013288135-0-0-400-640-crop-1617013291535-63752718962657.jpg',
+    'https://thoibaotaichinhvietnam.vn/stores/news_dataimages/2025/092025/18/17/in_article/thuc-trang-cac-du-an-bat-dong-san-noi-bat-tai-tay-ninh-20250918173115.jpg?rt=20250918173435',
+    'https://thepearl.com.vn/wp-content/uploads/2025/06/21-1750220288651-1750220288839368636661.webp',
+    'https://thoibaotaichinhvietnam.vn/stores/news_dataimages/2025/072025/06/16/in_article/cac-du-an-bat-dong-san-tai-tay-ninh-long-an-cu-duoc-dua-ra-thi-truong-nam-2024-gio-ra-sao-20250706162136.jpg?rt=20250706162139',
+    'https://taiphatbd.vn/upload/product/anh11-5767.jpg',
+    'https://thuongtruong-fileserver.nvcms.net/IMAGES/2025/12/03/20251203102750-401.jpeg',
+    'https://nhadathalinh.com/wp-content/uploads/2024/03/dat-tay-ninh.jpeg',
+    'https://images2.thanhnien.vn/528068263637045248/2023/3/22/cong-trinh-dan-nuoc-vuot-song-vam-co-dong-2-16794824773881385698408.jpg',
+    'https://cafefcdn.com/thumb_w/640/pr/2021/photo-1-1626058297575363991153-0-114-644-1144-crop-1626058417802-63761789396562.jpg',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv9XfbrUbG71jtRDNLOxArpCv0Z-P232fOTg&s'
   ];
   const defaultImage = `https://images.unsplash.com/photo-1497366754035-f200968a6e72?${imageParams}`;
+
+  const trustedImageDomains = [
+    'unsplash.com',
+    'nhadattantru.com',
+    'hoanganhinvest.com',
+    'themeadowbinhchanh.com.vn',
+    'thanhnien.vn',
+    'thuonghieucongluan.vn',
+    'cafefcdn.com',
+    'thoibaotaichinhvietnam.vn',
+    'thepearl.com.vn',
+    'taiphatbd.vn',
+    'thuongtruong-fileserver.nvcms.net',
+    'nhadathalinh.com',
+    'gstatic.com'
+  ];
 
   const loadProvinces = async (regionKey: 'north' | 'central' | 'south') => {
     try {
@@ -102,15 +135,17 @@ export default function RegionalGroupsList({ selectedGroups = [], onGroupSelect,
       setLoading(true);
       const region = regionLabelMap[regionKey];
       const data = await api.groups(region, province);
-      const mappedData = data.map((g: any, index: number) => ({
-        ...g,
-        // Ưu tiên dùng ảnh từ backend, chỉ fallback khi không có hoặc không hợp lệ
-        image: (g.image && g.image.includes('unsplash.com')) 
-          ? g.image 
-          : groupImages[index % groupImages.length] || defaultImage,
-        verified: index % 3 === 0,
-        local: index % 2 === 0
-      }));
+      const mappedData = data.map((g: any, index: number) => {
+        const backendImage = g.image;
+        const isTrusted = backendImage && trustedImageDomains.some((d) => backendImage.includes(d));
+        return {
+          ...g,
+          // Ưu tiên ảnh backend nếu thuộc domain tin cậy, fallback sang pool cục bộ
+          image: isTrusted ? backendImage : groupImages[index % groupImages.length] || defaultImage,
+          verified: index % 3 === 0,
+          local: index % 2 === 0
+        };
+      });
       setBackendGroups(mappedData);
     } catch (err: any) {
       toast.error('Không thể tải danh sách nhóm');
@@ -223,6 +258,7 @@ export default function RegionalGroupsList({ selectedGroups = [], onGroupSelect,
               <div className="relative flex-shrink-0">
                 <ImageWithFallback
                   src={image}
+                  fallbackSrc={groupImages[(index + 1) % groupImages.length] || defaultImage}
                   alt={group.name}
                   className="w-12 h-12 rounded-xl object-cover"
                 />

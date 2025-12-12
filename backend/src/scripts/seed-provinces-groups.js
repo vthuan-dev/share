@@ -147,8 +147,42 @@ const imagePool = [
   'https://media.thuonghieucongluan.vn/uploads/2019_02_08/bat-dong-san-1549590539.png',
   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPkbDQlH_XXS7GUSc9dv_sJCTJCLPWnPRRBQ&s',
   'https://suckhoedoisong.qltns.mediacdn.vn/324455921873985536/2023/5/27/bds-1685191751928452029801.jpg',
-  'https://bcp.cdnchinhphu.vn/334894974524682240/2025/1/8/bds-cn-17054593951211988391423-2-17234297639371023957239-1-17363081602221347796039.jpg'
+  'https://bcp.cdnchinhphu.vn/334894974524682240/2025/1/8/bds-cn-17054593951211988391423-2-17234297639371023957239-1-17363081602221347796039.jpg',
+  // user provided batch 2
+  'https://nhadattantru.com/upload/filemanager/files/dat-nen-hung-yen-1.jpg',
+  'https://hoanganhinvest.com/wp-content/uploads/2025/05/bat-dong-san-tay-ninh-1.jpg',
+  'https://themeadowbinhchanh.com.vn/wp-content/uploads/2025/05/thi-truong-nha-dat-tay-ninh-2025--960x620.jpg',
+  'https://images2.thanhnien.vn/zoom/686_429/Uploaded/quochung.qc/2020_10_26/tayninh/hinh-21_PQSN.jpg',
+  'https://media.thuonghieucongluan.vn/uploads/2024/10/06/golden-city-1728210673.jpg',
+  'https://cafefcdn.com/thumb_w/640/pr/2021/1617013288135-0-0-400-640-crop-1617013291535-63752718962657.jpg',
+  'https://thoibaotaichinhvietnam.vn/stores/news_dataimages/2025/092025/18/17/in_article/thuc-trang-cac-du-an-bat-dong-san-noi-bat-tai-tay-ninh-20250918173115.jpg?rt=20250918173435',
+  'https://thepearl.com.vn/wp-content/uploads/2025/06/21-1750220288651-1750220288839368636661.webp',
+  'https://thoibaotaichinhvietnam.vn/stores/news_dataimages/2025/072025/06/16/in_article/cac-du-an-bat-dong-san-tai-tay-ninh-long-an-cu-duoc-dua-ra-thi-truong-nam-2024-gio-ra-sao-20250706162136.jpg?rt=20250706162139',
+  'https://taiphatbd.vn/upload/product/anh11-5767.jpg',
+  'https://thuongtruong-fileserver.nvcms.net/IMAGES/2025/12/03/20251203102750-401.jpeg',
+  'https://nhadathalinh.com/wp-content/uploads/2024/03/dat-tay-ninh.jpeg',
+  'https://images2.thanhnien.vn/528068263637045248/2023/3/22/cong-trinh-dan-nuoc-vuot-song-vam-co-dong-2-16794824773881385698408.jpg',
+  'https://cafefcdn.com/thumb_w/640/pr/2021/photo-1-1626058297575363991153-0-114-644-1144-crop-1626058417802-63761789396562.jpg',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv9XfbrUbG71jtRDNLOxArpCv0Z-P232fOTg&s'
 ];
+
+const trustedImageDomains = [
+  'unsplash.com',
+  'nhadattantru.com',
+  'hoanganhinvest.com',
+  'themeadowbinhchanh.com.vn',
+  'thanhnien.vn',
+  'thuonghieucongluan.vn',
+  'cafefcdn.com',
+  'thoibaotaichinhvietnam.vn',
+  'thepearl.com.vn',
+  'taiphatbd.vn',
+  'thuongtruong-fileserver.nvcms.net',
+  'nhadathalinh.com',
+  'gstatic.com'
+];
+
+const isTrustedImage = (url = '') => trustedImageDomains.some((domain) => url.includes(domain));
 
 async function seedGroups() {
   try {
@@ -184,30 +218,21 @@ async function seedGroups() {
             image: imageUrl,
           });
           createdCount++;
-        } else {
-          // Cập nhật ảnh nếu nhóm đã tồn tại nhưng chưa có ảnh hoặc ảnh không đúng
-          if (!existing.image || !existing.image.includes('unsplash.com')) {
-            await Group.findByIdAndUpdate(existing._id, {
-              image: imageUrl,
-            });
-            updatedCount++;
-          }
+        } else if (!existing.image || !isTrustedImage(existing.image)) {
+          // Cập nhật ảnh nếu nhóm đã tồn tại nhưng chưa có ảnh hoặc ảnh không thuộc domain tin cậy
+          await Group.findByIdAndUpdate(existing._id, {
+            image: imageUrl,
+          });
+          updatedCount++;
         }
       }
     }
 
-    // Cập nhật tất cả nhóm không có ảnh
-    const groupsWithoutImage = await Group.find({ 
-      $or: [
-        { image: { $exists: false } },
-        { image: null },
-        { image: '' },
-        { image: { $not: /unsplash\.com/ } }
-      ]
-    });
+    // Cập nhật tất cả nhóm không có ảnh hoặc ảnh không thuộc domain tin cậy
+    const allGroups = await Group.find({});
     
-    for (const group of groupsWithoutImage) {
-      // Tìm ảnh phù hợp dựa trên tên nhóm
+    for (const group of allGroups) {
+      if (isTrustedImage(group.image)) continue;
       const matchedImage = imagePool[globalImageIndex % imagePool.length];
       globalImageIndex++;
       await Group.findByIdAndUpdate(group._id, {
