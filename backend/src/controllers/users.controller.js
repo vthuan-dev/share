@@ -2,6 +2,8 @@ import { z } from 'zod';
 import mongoose from 'mongoose';
 import { User } from '../models/User.js';
 import { SharePost } from '../models/SharePost.js';
+import { Group } from '../models/Group.js';
+import { sendSharePostNotification } from '../utils/telegram.js';
 
 const updateProfileSchema = z.object({
   name: z.string().trim().min(1).max(120).optional(),
@@ -209,6 +211,27 @@ export async function sharePost(req, res, next) {
         shareCount: count,
         lastShareDate: todayStr,
       });
+    }
+
+    // Send Telegram notification (non-blocking)
+    try {
+      // Populate group information for notification
+      const groups = await Group.find({ _id: { $in: groupObjectIds } })
+        .select('name region province')
+        .lean();
+
+      await sendSharePostNotification({
+        userName: currentUser.name,
+        userEmail: currentUser.email,
+        postLink: postLink.trim(),
+        groupCount: count,
+        groups: groups,
+        isFreeShare: isFreeShare,
+        createdAt: sharePost.createdAt,
+      });
+    } catch (telegramError) {
+      // Log error but don't fail the share operation
+      console.error('[SharePost] Telegram notification error:', telegramError);
     }
 
     return res.json({
