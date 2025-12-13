@@ -214,6 +214,43 @@ export default function RegionalGroupsList({ selectedGroups = [], onGroupSelect,
         </div>
       </div>
 
+      {/* Select All Button */}
+      {selectionMode && backendGroups.length > 0 && (
+        <div className="mb-3">
+          <button
+            onClick={() => {
+              const allSelected = backendGroups.every(g => selectedGroups.includes(String(g.id)));
+              backendGroups.forEach((group) => {
+                const groupId = String(group.id);
+                const isCurrentlySelected = selectedGroups.includes(groupId);
+                if (allSelected) {
+                  // Deselect all
+                  if (isCurrentlySelected) {
+                    onGroupSelect?.(groupId, false, { id: groupId, name: group.name, region: group.region, image: group.image });
+                  }
+                } else {
+                  // Select all
+                  if (!isCurrentlySelected) {
+                    onGroupSelect?.(groupId, true, { id: groupId, name: group.name, region: group.region, image: group.image });
+                  }
+                }
+              });
+            }}
+            className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors text-sm flex items-center justify-center gap-2"
+          >
+            {backendGroups.every(g => selectedGroups.includes(String(g.id))) ? (
+              <>
+                <span>Bỏ chọn tất cả</span>
+              </>
+            ) : (
+              <>
+                <span>Chọn tất cả ({backendGroups.length} nhóm)</span>
+              </>
+            )}
+          </button>
+        </div>
+      )}
+
       {/* Groups List */}
       <div className="space-y-2">
         {backendGroups.map((group, index) => {

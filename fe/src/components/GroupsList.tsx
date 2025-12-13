@@ -222,6 +222,43 @@ export default function GroupsList({ selectedGroups = [], onGroupSelect, selecti
 
   return (
     <div className="space-y-3 pb-4">
+      {/* Select All Button */}
+      {selectionMode && displayGroups.length > 0 && (
+        <div className="mb-3">
+          <button
+            onClick={() => {
+              const allSelected = displayGroups.every(g => selectedGroups.includes(String(g.id)));
+              displayGroups.forEach((group) => {
+                const groupId = String(group.id);
+                const isCurrentlySelected = selectedGroups.includes(groupId);
+                if (allSelected) {
+                  // Deselect all
+                  if (isCurrentlySelected) {
+                    onGroupSelect?.(groupId, false, { id: groupId, name: group.name, region: group.region, image: group.image });
+                  }
+                } else {
+                  // Select all
+                  if (!isCurrentlySelected) {
+                    onGroupSelect?.(groupId, true, { id: groupId, name: group.name, region: group.region, image: group.image });
+                  }
+                }
+              });
+            }}
+            className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors text-sm flex items-center justify-center gap-2"
+          >
+            {displayGroups.every(g => selectedGroups.includes(String(g.id))) ? (
+              <>
+                <span>Bỏ chọn tất cả</span>
+              </>
+            ) : (
+              <>
+                <span>Chọn tất cả ({displayGroups.length} nhóm)</span>
+              </>
+            )}
+          </button>
+        </div>
+      )}
+      
       {displayGroups.map((group) => {
         const groupId = String(group.id);
         const isSelected = selectedGroups.includes(groupId);

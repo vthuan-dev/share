@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Home, Users, UserCircle, Menu } from 'lucide-react';
+import { toast } from 'sonner';
 import FacebookShareSheet from './FacebookShareSheet';
 
 interface BottomNavProps {
@@ -64,6 +65,16 @@ export default function BottomNav({ activeTab, setActiveTab, selectedGroups = []
           // Fallback: mở sheet nhưng sẽ hiển thị login
           setIsFbSheetOpen(true);
         }
+        return;
+      }
+      // Kiểm tra có ít nhất 1 nhóm được chọn
+      if (selectedGroups.length === 0) {
+        toast.error('Vui lòng chọn ít nhất một nhóm để chia sẻ', {
+          description: 'Vào tab "Nhóm chia sẻ" để chọn nhóm',
+          duration: 3000,
+        });
+        // Chuyển đến tab groups để user chọn nhóm
+        setActiveTab('groups');
         return;
       }
       // Open in-app Facebook share/login UI

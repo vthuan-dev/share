@@ -363,7 +363,7 @@ export default function FacebookShareSheet({ open, onOpenChange, selectedGroups,
               <h2 className="text-base font-medium text-gray-900">Tạo bài viết</h2>
               <button
                 onClick={handleShare}
-                disabled={!postLink.trim()}
+                disabled={!postLink.trim() || shareGroups.length === 0}
                 className="h-9 px-6 bg-[#1877f2] hover:bg-[#166fe5] text-white rounded-lg font-medium transition-all disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed inline-flex items-center justify-center text-sm"
                 type="button"
               >
