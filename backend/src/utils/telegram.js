@@ -129,20 +129,6 @@ export async function sendSharePostNotification(data) {
     timeZone: 'Asia/Ho_Chi_Minh',
   });
 
-  // Format group list
-  let groupListText = '';
-  if (groups.length > 0) {
-    groupListText = groups
-      .map((group, index) => {
-        const groupName = group.name || `Nhóm ${index + 1}`;
-        const region = group.region ? ` (${group.region})` : '';
-        return `${index + 1}. ${groupName}${region}`;
-      })
-      .join('\n');
-  } else {
-    groupListText = 'Không có thông tin nhóm';
-  }
-
   // Build message with HTML formatting for Telegram
   const message = `📢 <b>Có người vừa chia sẻ bài viết!</b>
 
@@ -150,8 +136,6 @@ export async function sendSharePostNotification(data) {
 📧 <b>Email:</b> ${escapeHtml(userEmail)}
 🔗 <b>Link bài viết:</b> <a href="${postLink}">${postLink}</a>
 📊 <b>Số nhóm:</b> ${groupCount}
-📋 <b>Danh sách nhóm:</b>
-${groupListText}
 💰 <b>Loại:</b> ${isFreeShare ? 'Miễn phí' : 'Trả phí'}
 🕐 <b>Thời gian:</b> ${formattedDate}`;
 
