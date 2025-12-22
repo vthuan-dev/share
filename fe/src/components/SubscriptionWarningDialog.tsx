@@ -25,20 +25,14 @@ export default function SubscriptionWarningDialog({
 
       {/* Dialog Content */}
       <div 
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[10000] w-[95vw] max-w-[380px] bg-white rounded-[32px] shadow-2xl overflow-hidden"
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[10000] w-[95vw] max-w-[440px] bg-white rounded-[32px] shadow-2xl overflow-hidden"
         style={{ animation: 'scaleIn 0.3s ease-out' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header - Red Background */}
         <div className="relative px-5 py-4 bg-red-600">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-center">
             <h2 className="text-lg font-bold text-white">Thông báo</h2>
-            <button
-              onClick={() => onOpenChange(false)}
-              className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
-            >
-              <X className="w-4 h-4 text-white" />
-            </button>
           </div>
         </div>
 
@@ -59,29 +53,23 @@ export default function SubscriptionWarningDialog({
           </div>
 
           {/* Description */}
-          <div className="bg-yellow-50 border-2 border-yellow-200 rounded-2xl p-4 space-y-2">
-            <div className="flex items-start gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-yellow-600 mt-1.5 flex-shrink-0"></div>
-              <p className="text-sm text-yellow-900 leading-relaxed">
-                Lần đầu chia sẻ miễn phí, từ lần 2 cần đăng ký gói.
-              </p>
-            </div>
-            <div className="flex items-start gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-yellow-600 mt-1.5 flex-shrink-0"></div>
-              <p className="text-sm text-yellow-900 leading-relaxed">
-                Vào tab <span className="font-semibold">Tài khoản</span> để đăng ký gói
-              </p>
-            </div>
+          <div className="bg-yellow-50 border border-yellow-200 shadow-sm rounded-2xl p-4 space-y-2">
+            <p className="text-sm text-yellow-900 leading-relaxed">
+              Lần đầu chia sẻ miễn phí. Từ lần thứ 2, vui lòng đăng ký gói.
+            </p>
+            <p className="text-sm text-yellow-900 leading-relaxed">
+              Mở tab <span className="font-semibold">Tài khoản</span> để chọn gói và tiếp tục chia sẻ.
+            </p>
           </div>
 
           {/* Action Button */}
-          <div className="pt-2">
+          <div className="pt-1">
             <Button
               onClick={() => {
                 onOpenChange(false);
                 onRegister();
               }}
-              className="w-full h-11 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl text-base shadow-lg transition-colors"
+              className="w-full h-10 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg text-sm shadow-md transition-colors"
             >
               Đăng ký ngay
             </Button>
