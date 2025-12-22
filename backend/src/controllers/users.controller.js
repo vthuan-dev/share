@@ -40,6 +40,9 @@ export async function me(req, res, next) {
     const now = new Date();
     const hasActiveSubscription = user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > now;
 
+    const totalFreeGroupsShared = user.totalFreeGroupsShared || 0;
+    const remainingFreeGroups = Math.max(0, 100 - totalFreeGroupsShared);
+
     return res.json({
       id: user._id.toString(),
       name: user.name,
@@ -51,6 +54,8 @@ export async function me(req, res, next) {
       isApproved: !!user.isApproved,
       shareCount: shareCount,
       hasUsedFreeShare: !!user.hasUsedFreeShare,
+      totalFreeGroupsShared: totalFreeGroupsShared,
+      remainingFreeGroups: remainingFreeGroups,
       hasActiveSubscription: !!hasActiveSubscription,
       subscriptionExpiresAt: user.subscriptionExpiresAt,
       createdAt: user.createdAt,
@@ -154,15 +159,19 @@ export async function sharePost(req, res, next) {
     const currentUser = await User.findById(req.user.id);
     if (!currentUser) return res.status(404).json({ error: 'User not found' });
 
-    // Check if user can share (free first time or has active subscription)
+    // Check if user can share (100 groups free or has active subscription)
     const now = new Date();
     const hasActiveSubscription = currentUser.subscriptionExpiresAt && new Date(currentUser.subscriptionExpiresAt) > now;
-    const canShareFree = !currentUser.hasUsedFreeShare;
-    
+    const totalFreeGroupsShared = currentUser.totalFreeGroupsShared || 0;
+    const remainingFreeGroups = 100 - totalFreeGroupsShared;
+    const canShareFree = remainingFreeGroups >= count;
+
     if (!canShareFree && !hasActiveSubscription) {
-      return res.status(403).json({ 
-        error: 'Bạn cần đăng ký gói để tiếp tục chia sẻ. Lần đầu chia sẻ miễn phí, từ lần 2 cần đăng ký gói.',
-        requiresSubscription: true
+      return res.status(403).json({
+        error: `Bạn đã sử dụng hết ${totalFreeGroupsShared}/100 nhóm miễn phí. Vui lòng đăng ký gói để tiếp tục.`,
+        requiresSubscription: true,
+        totalFreeGroupsShared: totalFreeGroupsShared,
+        remainingFreeGroups: Math.max(0, remainingFreeGroups)
       });
     }
 
@@ -171,8 +180,8 @@ export async function sharePost(req, res, next) {
     today.setHours(today.getHours() + 7);
     const todayStr = today.toISOString().split('T')[0];
 
-    // Mark as used free share if this is first time
-    const isFreeShare = canShareFree;
+    // Mark as free share if user doesn't have active subscription
+    const isFreeShare = !hasActiveSubscription;
 
     // Convert groupIds from string to ObjectId
     const groupObjectIds = groupIds.map(id => {
@@ -193,10 +202,13 @@ export async function sharePost(req, res, next) {
       isFreeShare: isFreeShare,
     });
 
-    // Update user - mark free share as used
-    await User.findByIdAndUpdate(req.user.id, {
-      hasUsedFreeShare: true,
-    });
+    // Update user - increment free groups counter if this is a free share
+    if (isFreeShare) {
+      await User.findByIdAndUpdate(req.user.id, {
+        $inc: { totalFreeGroupsShared: count },
+        hasUsedFreeShare: true, // Keep for backward compatibility
+      });
+    }
 
     // Update share count separately (vì không thể mix $inc với field thường)
     if (currentUser.lastShareDate === todayStr) {
@@ -243,9 +255,10 @@ export async function sharePost(req, res, next) {
         isFreeShare: sharePost.isFreeShare,
         createdAt: sharePost.createdAt,
       },
-      message: isFreeShare 
-        ? 'Chia sẻ miễn phí thành công! Lần tiếp theo bạn cần đăng ký gói để tiếp tục.'
+      message: isFreeShare
+        ? `Chia sẻ miễn phí thành công! Bạn đã dùng ${totalFreeGroupsShared + count}/100 nhóm miễn phí.`
         : 'Chia sẻ thành công!',
+      remainingFreeGroups: isFreeShare ? Math.max(0, remainingFreeGroups - count) : null,
     });
   } catch (err) {
     next(err);
