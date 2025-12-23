@@ -12,8 +12,10 @@ const userSchema = new mongoose.Schema(
     balance: { type: Number, default: 0 },
     shareCount: { type: Number, default: 0 },
     lastShareDate: { type: String, default: null }, // Format: YYYY-MM-DD
-    hasUsedFreeShare: { type: Boolean, default: false }, // Đã dùng lần share miễn phí chưa (deprecated)
-    totalFreeGroupsShared: { type: Number, default: 0 }, // Tổng số nhóm đã share miễn phí (max 100)
+    // Đã dùng lần share miễn phí đầu tiên chưa
+    hasUsedFreeShare: { type: Boolean, default: false },
+    // Số nhóm đã share trong lần share miễn phí đầu tiên (tối đa 100 nhóm)
+    totalFreeGroupsShared: { type: Number, default: 0 },
     subscriptionExpiresAt: { type: Date, default: null }, // Ngày hết hạn gói đăng ký
   },
   { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } }

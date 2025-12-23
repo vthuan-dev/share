@@ -10,7 +10,8 @@
     "create-admin": "node ./src/scripts/create-admin.js",
     "seed-provinces": "node ./src/scripts/seed-provinces-groups.js",
     "get-chat-id": "node ./src/scripts/get-telegram-chat-id.js",
-    "test-telegram": "node ./src/scripts/test-telegram-bot.js"
+    "test-telegram": "node ./src/scripts/test-telegram-bot.js",
+    "test-free-share-state": "node ./src/scripts/test-free-share-logic.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

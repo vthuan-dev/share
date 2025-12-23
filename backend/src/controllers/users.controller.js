@@ -159,20 +159,38 @@ export async function sharePost(req, res, next) {
     const currentUser = await User.findById(req.user.id);
     if (!currentUser) return res.status(404).json({ error: 'User not found' });
 
-    // Check if user can share (100 groups free or has active subscription)
+    // Check if user can share:
+    // - Nếu đã có gói: được share bình thường
+    // - Nếu chưa có gói: chỉ được 1 lần share miễn phí đầu tiên, tối đa 100 nhóm
     const now = new Date();
-    const hasActiveSubscription = currentUser.subscriptionExpiresAt && new Date(currentUser.subscriptionExpiresAt) > now;
-    const totalFreeGroupsShared = currentUser.totalFreeGroupsShared || 0;
-    const remainingFreeGroups = 100 - totalFreeGroupsShared;
-    const canShareFree = remainingFreeGroups >= count;
+    const hasActiveSubscription =
+      currentUser.subscriptionExpiresAt &&
+      new Date(currentUser.subscriptionExpiresAt) > now;
 
-    if (!canShareFree && !hasActiveSubscription) {
-      return res.status(403).json({
-        error: `Bạn đã sử dụng hết ${totalFreeGroupsShared}/100 nhóm miễn phí. Vui lòng đăng ký gói để tiếp tục.`,
-        requiresSubscription: true,
-        totalFreeGroupsShared: totalFreeGroupsShared,
-        remainingFreeGroups: Math.max(0, remainingFreeGroups)
-      });
+    const hasUsedFreeShare = !!currentUser.hasUsedFreeShare;
+    const totalFreeGroupsShared = currentUser.totalFreeGroupsShared || 0;
+
+    if (!hasActiveSubscription) {
+      // Đã dùng lần share miễn phí rồi → bắt buộc phải đăng ký gói
+      if (hasUsedFreeShare) {
+        return res.status(403).json({
+          error:
+            'Bạn đã sử dụng lần chia sẻ miễn phí. Vui lòng đăng ký gói để tiếp tục chia sẻ.',
+          requiresSubscription: true,
+          totalFreeGroupsShared,
+          remainingFreeGroups: 0,
+        });
+      }
+
+      // Lần share miễn phí đầu tiên nhưng vượt quá 100 nhóm
+      if (count > 100) {
+        return res.status(403).json({
+          error: 'Lần chia sẻ miễn phí đầu tiên chỉ được tối đa 100 nhóm.',
+          requiresSubscription: false,
+          totalFreeGroupsShared,
+          remainingFreeGroups: Math.max(0, 100 - totalFreeGroupsShared),
+        });
+      }
     }
 
     // Get current date in YYYY-MM-DD format (Vietnam timezone UTC+7)
@@ -180,7 +198,7 @@ export async function sharePost(req, res, next) {
     today.setHours(today.getHours() + 7);
     const todayStr = today.toISOString().split('T')[0];
 
-    // Mark as free share if user doesn't have active subscription
+    // Mark as free share nếu user chưa có gói (và đã pass các điều kiện trên)
     const isFreeShare = !hasActiveSubscription;
 
     // Convert groupIds from string to ObjectId
@@ -202,11 +220,11 @@ export async function sharePost(req, res, next) {
       isFreeShare: isFreeShare,
     });
 
-    // Update user - increment free groups counter if this is a free share
+    // Update user - đánh dấu đã dùng lần share miễn phí nếu đây là free share
     if (isFreeShare) {
       await User.findByIdAndUpdate(req.user.id, {
-        $inc: { totalFreeGroupsShared: count },
-        hasUsedFreeShare: true, // Keep for backward compatibility
+        totalFreeGroupsShared: count,
+        hasUsedFreeShare: true,
       });
     }
 
@@ -256,9 +274,9 @@ export async function sharePost(req, res, next) {
         createdAt: sharePost.createdAt,
       },
       message: isFreeShare
-        ? `Chia sẻ miễn phí thành công! Bạn đã dùng ${totalFreeGroupsShared + count}/100 nhóm miễn phí.`
+        ? `Chia sẻ miễn phí thành công! Bạn đã dùng ${count}/100 nhóm miễn phí (lần miễn phí đầu tiên).`
         : 'Chia sẻ thành công!',
-      remainingFreeGroups: isFreeShare ? Math.max(0, remainingFreeGroups - count) : null,
+      remainingFreeGroups: isFreeShare ? Math.max(0, 100 - count) : null,
     });
   } catch (err) {
     next(err);

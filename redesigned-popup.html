@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Notification Popup</title>
+    <link rel="stylesheet" href="popup-styles.css">
+</head>
+<body>
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Popup Container -->
+    <div class="popup-container" id="popup">
+        <!-- Header with gradient -->
+        <div class="popup-header">
+            <div class="icon-wrapper">
+                <svg class="icon-alert" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    <path d="M12 8V12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="12" cy="16" r="1" fill="currentColor"/>
+                </svg>
+            </div>
+            <h2 class="popup-title">Thông báo</h2>
+            <button class="close-btn" id="closeBtn">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="popup-content">
+            <div class="message-box">
+                <h3 class="message-title">Bạn cần đăng ký gói để tiếp tục chia sẻ</h3>
+                <p class="message-description">
+                    Lần đầu chia sẻ miễn phí. Từ lần thứ 2, vui lòng đăng ký gói.
+                </p>
+                <p class="message-instruction">
+                    Mở tab <strong>Tài khoản</strong> để chọn gói và tiếp tục chia sẻ.
+                </p>
+            </div>
+
+            <!-- Feature highlights -->
+            <div class="features">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <span>Chia sẻ không giới hạn</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 10V3L4 14H11V21L20 10H13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <span>Truy cập nhanh chóng</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M19.4 15C19.1277 15.6171 19.0583 16.3078 19.2037 16.9698C19.3491 17.6318 19.7011 18.2267 20.2 18.67L20.29 18.76C20.6861 19.1552 20.9997 19.6246 21.2129 20.1421C21.4261 20.6596 21.5349 21.2155 21.5329 21.7767C21.5329 22.338 21.4208 22.8931 21.2047 23.4095C20.9886 23.9258 20.6728 24.3932 20.275 24.7857C19.8772 25.1782 19.4055 25.4881 18.8863 25.6983C18.3671 25.9085 17.8107 26.0149 17.25 26.0111C16.6893 26.0073 16.1345 25.8933 15.6181 25.6755C15.1017 25.4577 14.6343 25.1407 14.242 24.742L14.15 24.652C13.7067 24.1531 13.1118 23.8011 12.4498 23.6557C11.7878 23.5103 11.0971 23.5797 10.48 23.852C9.86291 24.1243 9.35116 24.5863 9.01656 25.1721C8.68196 25.7579 8.54202 26.4378 8.61667 27.1111V27.3333C8.61667 28.4384 8.17857 29.4982 7.39591 30.2808C6.61325 31.0635 5.55339 31.5016 4.44833 31.5016C3.34328 31.5016 2.28341 31.0635 1.50076 30.2808C0.718098 29.4982 0.28 28.4384 0.28 27.3333C0.28 26.2283 0.718098 25.1684 1.50076 24.3858C2.28341 23.6031 3.34328 23.165 4.44833 23.165H4.67C5.34333 23.2397 6.02318 23.0997 6.60899 22.7651C7.1948 22.4305 7.65679 21.9188 7.92911 21.3017C8.20144 20.6846 8.27082 19.9939 8.12542 19.3319C7.98002 18.6699 7.62805 18.075 7.12917 17.6317L7.03917 17.5417C6.64398 17.1455 6.33037 16.6761 6.11717 16.1586C5.90396 15.6411 5.79517 15.0852 5.79717 14.524C5.79917 13.9627 5.91193 13.4076 6.12903 12.8912C6.34614 12.3749 6.66194 11.9075 7.05972 11.515C7.4575 11.1225 7.92923 10.8126 8.44842 10.6024C8.96762 10.3922 9.52399 10.2858 10.0847 10.2896C10.6454 10.2934 11.2002 10.4074 11.7166 10.6252C12.233 10.843 12.7004 11.16 13.0927 11.5583L13.1827 11.6483C13.626 12.1472 14.2209 12.4992 14.8829 12.6446C15.5449 12.79 16.2356 12.7206 16.8527 12.4483C17.4698 12.176 17.9816 11.714 18.3162 11.1282C18.6508 10.5424 18.7907 9.86252 18.716 9.18917V9C18.716 7.89493 19.1541 6.83507 19.9368 6.05241C20.7194 5.26975 21.7793 4.83165 22.8843 4.83165C23.9894 4.83165 25.0493 5.26975 25.8319 6.05241C26.6146 6.83507 27.0527 7.89493 27.0527 9C27.0527 10.1051 26.6146 11.1649 25.8319 11.9476C25.0493 12.7302 23.9894 13.1683 22.8843 13.1683H22.662C21.9887 13.093 21.3088 13.233 20.723 13.5676C20.1372 13.9022 19.6752 14.4139 19.4029 15.031C19.1306 15.6481 19.0612 16.3388 19.2066 17.0008C19.352 17.6628 19.704 18.2577 20.2029 18.701L20.2929 18.791C20.6881 19.1872 21.0017 19.6566 21.2149 20.1741C21.4281 20.6916 21.5369 21.2475 21.5349 21.8088C21.5329 22.37 21.4207 22.9251 21.2046 23.4415C20.9885 23.9578 20.6727 24.4252 20.2749 24.8177C19.8771 25.2102 19.4054 25.5201 18.8862 25.7303C18.367 25.9405 17.8106 26.0469 17.2499 26.0431C16.6892 26.0393 16.1344 25.9253 15.618 25.7075C15.1016 25.4897 14.6342 25.1727 14.2419 24.7747L14.1519 24.6847C13.7086 24.1858 13.1137 23.8338 12.4517 23.6884C11.7897 23.543 11.099 23.6124 10.4819 23.8847" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <span>Tùy chỉnh linh hoạt</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="popup-actions">
+            <button class="btn btn-secondary" id="cancelBtn">Để sau</button>
+            <button class="btn btn-primary" id="registerBtn">
+                <span>Đăng ký ngay</span>
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script src="popup-script.js"></script>
+</body>
+</html>
