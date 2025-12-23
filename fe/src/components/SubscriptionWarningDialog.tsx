@@ -27,7 +27,7 @@ export default function SubscriptionWarningDialog({
         className="fixed top-1/2 left-1/2 z-[10000] w-[92vw] max-w-[440px] bg-white overflow-hidden"
         style={{
           transform: 'translate(-50%, -50%)',
-          borderRadius: '24px',
+          borderRadius: '20px',
           boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
         }}
         onClick={(e) => e.stopPropagation()}
@@ -37,6 +37,8 @@ export default function SubscriptionWarningDialog({
           className="relative px-6 py-6"
           style={{
             background: 'linear-gradient(135deg, #dc2626 0%, #f87171 100%)',
+            borderTopLeftRadius: '20px',
+            borderTopRightRadius: '20px'
           }}
         >
           {/* Close Button - More elegant */}
@@ -94,7 +96,7 @@ export default function SubscriptionWarningDialog({
             className="p-4 mb-5"
             style={{
               background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
-              borderRadius: '16px',
+              borderRadius: '12px',
               border: '1px solid rgba(239, 68, 68, 0.2)'
             }}
           >
@@ -109,7 +111,7 @@ export default function SubscriptionWarningDialog({
             <button
               onClick={() => onOpenChange(false)}
               className="flex-1 h-12 px-5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold transition-all active:scale-95"
-              style={{ borderRadius: '14px' }}
+              style={{ borderRadius: '12px' }}
             >
               Để sau
             </button>
@@ -123,7 +125,7 @@ export default function SubscriptionWarningDialog({
               className="flex-1 h-12 px-5 text-white font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
               style={{
                 background: 'linear-gradient(135deg, #dc2626 0%, #f87171 100%)',
-                borderRadius: '14px',
+                borderRadius: '12px',
                 boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)'
               }}
               onMouseEnter={(e) => {

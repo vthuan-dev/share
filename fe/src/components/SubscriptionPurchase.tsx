@@ -67,7 +67,7 @@ export default function SubscriptionPurchase({ open, onOpenChange, onPurchaseSuc
       setLoading(true);
       const paymentNote = `GOI ${selectedPlan.name.toUpperCase()} WEB SHARE`;
       await api.purchasePlan(selectedPlan.id as '6months' | '12months', paymentNote);
-      
+
       toast.success(`Đã gửi yêu cầu đăng ký ${selectedPlan.name}!`, {
         description: 'Vui lòng chờ admin xác nhận thanh toán',
       });
@@ -75,7 +75,7 @@ export default function SubscriptionPurchase({ open, onOpenChange, onPurchaseSuc
       setShowQR(false);
       setSelectedPlan(null);
       onOpenChange(false);
-      
+
       if (onPurchaseSuccess) {
         onPurchaseSuccess();
       }
@@ -88,10 +88,10 @@ export default function SubscriptionPurchase({ open, onOpenChange, onPurchaseSuc
 
   if (!open) return null;
 
-  const paymentNote = selectedPlan 
+  const paymentNote = selectedPlan
     ? `GOI ${selectedPlan.name.toUpperCase()} WEB SHARE`
     : 'GOI DANG KY WEB SHARE';
-  
+
   const qrSrc = selectedPlan
     ? `https://img.vietqr.io/image/${bankCode}-${accountNumber}-print.png?amount=${selectedPlan.price}&addInfo=${encodeURIComponent(paymentNote)}&accountName=${encodeURIComponent(accountName)}`
     : '';
@@ -99,7 +99,7 @@ export default function SubscriptionPurchase({ open, onOpenChange, onPurchaseSuc
   return (
     <>
       {/* Overlay */}
-      <div 
+      <div
         className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity"
         onClick={() => onOpenChange(false)}
       />
@@ -109,7 +109,7 @@ export default function SubscriptionPurchase({ open, onOpenChange, onPurchaseSuc
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="w-full max-w-[430px] bg-white rounded-[32px] shadow-2xl overflow-hidden">
             {/* Header */}
-            <div className="relative px-6 py-4 bg-red-600">
+            <div className="relative px-6 py-4 bg-red-600" style={{ borderTopLeftRadius: '32px', borderTopRightRadius: '32px' }}>
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-white">Đăng ký gói sử dụng</h2>
                 <button
@@ -125,11 +125,10 @@ export default function SubscriptionPurchase({ open, onOpenChange, onPurchaseSuc
             <div className="px-6 py-6 space-y-4">
               {/* Subscription Status */}
               {subscriptionStatus && (
-                <div className={`rounded-2xl p-4 ${
-                  subscriptionStatus.hasActiveSubscription 
-                    ? 'bg-green-50 border border-green-200' 
-                    : 'bg-yellow-50 border border-yellow-200'
-                }`}>
+                <div className={`rounded-2xl p-4 ${subscriptionStatus.hasActiveSubscription
+                  ? 'bg-green-50 border border-green-200'
+                  : 'bg-yellow-50 border border-yellow-200'
+                  }`}>
                   <div className="flex items-center gap-2 mb-2">
                     {subscriptionStatus.hasActiveSubscription ? (
                       <>
@@ -150,7 +149,7 @@ export default function SubscriptionPurchase({ open, onOpenChange, onPurchaseSuc
                   )}
                   {!subscriptionStatus.hasActiveSubscription && (
                     <p className="text-sm text-yellow-700">
-                      {subscriptionStatus.hasUsedFreeShare 
+                      {subscriptionStatus.hasUsedFreeShare
                         ? 'Bạn đã dùng lần share miễn phí. Vui lòng đăng ký gói để tiếp tục.'
                         : 'Bạn có 1 lần share miễn phí. Sau đó cần đăng ký gói.'}
                     </p>
@@ -188,9 +187,9 @@ export default function SubscriptionPurchase({ open, onOpenChange, onPurchaseSuc
       ) : (
         /* QR Payment Modal */
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-[430px] bg-white rounded-[32px] shadow-2xl overflow-hidden">
+          <div className="w-full max-w-[430px] bg-white shadow-2xl flex flex-col max-h-[90vh] overflow-hidden" style={{ borderRadius: '28px' }}>
             {/* Header */}
-            <div className="relative px-6 py-4 bg-red-600">
+            <div className="relative px-5 py-4 bg-red-600 flex-shrink-0" style={{ borderTopLeftRadius: '28px', borderTopRightRadius: '28px' }}>
               <div className="flex items-center justify-between">
                 <h2 className="text-base font-bold text-white leading-tight">
                   {selectedPlan?.name || 'Gói đăng ký'}
@@ -205,17 +204,16 @@ export default function SubscriptionPurchase({ open, onOpenChange, onPurchaseSuc
                   ×
                 </button>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-red-800"></div>
             </div>
 
             {/* QR Content */}
-            <div className="px-6 py-5 space-y-5 bg-white">
+            <div className="px-5 py-4 space-y-4 bg-white overflow-y-auto flex-1" style={{ borderBottomLeftRadius: '28px', borderBottomRightRadius: '28px' }}>
               {/* QR Code */}
-              <div className="rounded-3xl overflow-hidden bg-white p-4 shadow-md border border-gray-100">
+              <div className="rounded-3xl overflow-hidden bg-white p-3 shadow-md border border-gray-100">
                 <img
                   src={qrSrc}
                   alt="QR thanh toán"
-                  className="w-full h-auto"
+                  className="w-full h-auto max-w-full"
                 />
               </div>
 
@@ -250,7 +248,7 @@ export default function SubscriptionPurchase({ open, onOpenChange, onPurchaseSuc
               </div>
 
               {/* Actions */}
-              <div className="flex items-center justify-between gap-3 pt-1 pb-4">
+              <div className="flex items-center justify-between gap-3 pt-1 pb-2">
                 <Button
                   type="button"
                   className="flex-1 h-11 bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-full"
